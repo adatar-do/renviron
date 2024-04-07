@@ -1,0 +1,18 @@
+Package: renviron
+Title: Environment Variable Management for R Projects
+Version: 0.1.0
+Authors@R: 
+    c(person("Daniel E.", "de la Rosa", , "me@dnldelarosa.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5965-5277")),
+    person(given = "Adatar",
+           role = "cph"))
+Description: The `renviron` package provides a comprehensive suite of tools for managing environment variables within R projects, facilitating the creation, modification, and deletion of variables stored in the `.Renviron` file. Designed to enhance project configuration and security by enabling dynamic environment variable handling directly from R, `renviron` supports a range of operations including loading current environment settings, adding or updating variables, removing variables, and listing all set variables. This toolkit is particularly useful for projects requiring precise control over environment configurations, aiding in the seamless management of sensitive information such as API keys, database credentials, and application-specific settings. The intuitive interface and extensive functionality make it an essential utility for developers and data scientists looking to streamline their project setups.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports: 
+    fs,
+    magrittr,
+    readr,
+    usethis
