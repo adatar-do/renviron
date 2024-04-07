@@ -4,7 +4,7 @@
 \alias{renviron_delete}
 \title{Remove an Environment Variable}
 \usage{
-renviron_delete(key, .renviron = NULL, in_place = TRUE)
+renviron_delete(key, .renviron = NULL, in_place = TRUE, ...)
 }
 \arguments{
 \item{key}{A character string specifying the name of the environment variable to remove.}
@@ -15,6 +15,8 @@ can be useful for testing or when working with a temporary set of environment va
 
 \item{in_place}{A logical flag indicating whether to save the changes back to the .Renviron
 file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{TRUE}.}
+
+\item{...}{Additional arguments to be passed to \code{renviron_save()} if \code{in_place = TRUE}.}
 }
 \value{
 If \code{in_place} is \code{TRUE}, the function invisibly returns the modified list of environment

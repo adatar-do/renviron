@@ -10,6 +10,7 @@
 #'        can be useful for testing or when working with a temporary set of environment variables.
 #' @param in_place A logical flag indicating whether to save the changes back to the .Renviron
 #'        file (`TRUE`) or to return the modified list without saving (`FALSE`). Default is `TRUE`.
+#' @param ... Additional arguments to be passed to `renviron_save()` if `in_place = TRUE`.
 #'
 #' @return If `in_place` is `TRUE`, the function invisibly returns the modified list of environment
 #'         variables after saving it to the .Renviron file. If `in_place` is `FALSE`, it returns the modified
@@ -27,7 +28,7 @@
 #'}
 #'
 #' @export
-renviron_delete <- function(key, .renviron = NULL, in_place = TRUE) {
+renviron_delete <- function(key, .renviron = NULL, in_place = TRUE, ...) {
   if (is.null(.renviron)) {
     env <- renviron_load()  # Load environment variables if not provided
   } else {
@@ -37,7 +38,7 @@ renviron_delete <- function(key, .renviron = NULL, in_place = TRUE) {
   env[[key]] <- NULL  # Remove the specified key
 
   if (in_place) {
-    renviron_save(env)  # Save changes back to the .Renviron file
+    renviron_save(env, ...)  # Save changes back to the .Renviron file
     invisible(env)  # Return modified environment invisibly
   } else {
     return(env)  # Return modified environment without saving
