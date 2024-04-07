@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# renviron <img src="man/figures/logo.png" align="right" height="120" alt="" />
+# renviron <img src="man/figures/logo.png" align="right" height="120" alt="" /> 
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -24,7 +24,13 @@ knitr::opts_chunk$set(
 ![r-universe](https://adatar-do.r-universe.dev/badges/renviron)
 <!-- badges: end -->
 
-`renviron` is an R package designed to streamline the management of environment variables within R projects. It facilitates the creation, modification, and deletion of variables in the `.Renviron` file, enabling dynamic environment variable handling directly from R. This toolkit is essential for projects that require precise control over environment configurations, such as managing API keys, database credentials, and application-specific settings.
+`renviron` is an R package designed to streamline the management of environment variables within R projects. It facilitates the creation, modification, and deletion of variables in the `.Renviron` file, enabling dynamic environment variable handling directly from R. This toolkit is essential for projects that require precise control over environment configurations, such as managing API keys, database credentials, and application-specific settings. 
+
+
+```{r}
+devtools::load_all()
+```
+
 
 ## Installation
 

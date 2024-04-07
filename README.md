@@ -26,6 +26,11 @@ toolkit is essential for projects that require precise control over
 environment configurations, such as managing API keys, database
 credentials, and application-specific settings.
 
+``` r
+devtools::load_all()
+#> ℹ Loading renviron
+```
+
 ## Installation
 
 You can install the development version of `renviron` from [Adatar’s
