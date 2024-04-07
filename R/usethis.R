@@ -28,7 +28,7 @@
 #' usethis package: \url{https://usethis.r-lib.org/}
 #'
 #' @export
-scoped_path_r <- function (scope = c("user", "project"), ..., envvar = NULL) {
+scoped_path_r <- function (scope = c("project", "user"), ..., envvar = NULL) {
   # Function body as you provided
   scope <- match.arg(scope)
   if (scope == "user" && !is.null(envvar)) {

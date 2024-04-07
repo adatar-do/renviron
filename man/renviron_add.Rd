@@ -2,9 +2,16 @@
 % Please edit documentation in R/renviron_add.R
 \name{renviron_add}
 \alias{renviron_add}
-\title{Add or Update an Environment Variable}
+\title{Add or Update an Environment Variable in the .Renviron File}
 \usage{
-renviron_add(key, value, .renviron = NULL, in_place = TRUE, ...)
+renviron_add(
+  key,
+  value,
+  .renviron = NULL,
+  in_place = FALSE,
+  scope = c("project", "user"),
+  ...
+)
 }
 \arguments{
 \item{key}{A character string specifying the name of the environment variable to add or update.}
@@ -12,23 +19,30 @@ renviron_add(key, value, .renviron = NULL, in_place = TRUE, ...)
 \item{value}{The new value for the environment variable, provided as a character string.}
 
 \item{.renviron}{An optional named list of environment variables to modify instead of loading
-the .Renviron file. This can be useful for testing or batch updates to environment variables.}
+the .Renviron file using \code{renviron_load()}. This can be particularly useful for testing or when
+managing variables in a batch process.}
 
 \item{in_place}{A logical flag indicating whether to save the changes back to the .Renviron
-file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{TRUE}.}
+file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{TRUE}.
+When \code{FALSE}, the function allows for a more controlled manipulation of the variables without
+affecting the system environment or the .Renviron file.}
+
+\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when loading
+environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values are "user"
+and "project". The function searches in the order provided. The default order is \code{c("project", "user")}.}
 
 \item{...}{Additional arguments to be passed to \code{renviron_save()} if \code{in_place = TRUE}.}
 }
 \value{
 If \code{in_place} is \code{TRUE}, the function invisibly returns the modified list of environment
 variables after saving it to the .Renviron file. If \code{in_place} is \code{FALSE}, it returns the modified
-list without saving. This allows for further manipulation or inspection of the modified variables.
+list without saving, allowing further manipulation or inspection.
 }
 \description{
 This function adds a new environment variable or updates the value of an existing variable
-within the .Renviron file or a provided list of environment variables. By default, changes
-are saved back to the .Renviron file (\code{in_place = TRUE}), but the function can also return a modified
-list without saving (\code{in_place = FALSE}).
+within the .Renviron file, considering both user and project scopes as defined by the \code{scope} argument
+in \code{renviron_load()}. It provides the flexibility to either save the changes back to the .Renviron file
+or manipulate the variables in a more controlled manner by not saving (\code{in_place = FALSE}).
 }
 \examples{
 \dontrun{

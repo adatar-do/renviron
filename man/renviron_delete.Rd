@@ -4,7 +4,13 @@
 \alias{renviron_delete}
 \title{Remove an Environment Variable}
 \usage{
-renviron_delete(key, .renviron = NULL, in_place = TRUE, ...)
+renviron_delete(
+  key,
+  .renviron = NULL,
+  in_place = FALSE,
+  scope = c("project", "user"),
+  ...
+)
 }
 \arguments{
 \item{key}{A character string specifying the name of the environment variable to remove.}
@@ -16,25 +22,33 @@ can be useful for testing or when working with a temporary set of environment va
 \item{in_place}{A logical flag indicating whether to save the changes back to the .Renviron
 file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{TRUE}.}
 
+\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when loading
+environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values are "user"
+and "project". The function searches in the order provided. The default order is \code{c("project", "user")}.}
+
 \item{...}{Additional arguments to be passed to \code{renviron_save()} if \code{in_place = TRUE}.}
 }
 \value{
 If \code{in_place} is \code{TRUE}, the function invisibly returns the modified list of environment
-variables after saving it to the .Renviron file. If \code{in_place} is \code{FALSE}, it returns the modified
-list without saving, allowing further manipulation or inspection.
+variables after saving it to the .Renviron file and removes the variable from the system environment.
+If \code{in_place} is \code{FALSE}, it returns the modified list without saving, allowing further
+manipulation or inspection, but still removes the variable from the system environment.
 }
 \description{
 This function removes a specified environment variable from the .Renviron file or a provided
-list of environment variables. By default, the change is saved back to the .Renviron file (\code{in_place = TRUE}),
-but the function can also return a modified list without saving (\code{in_place = FALSE}).
+list of environment variables. It also attempts to remove the variable from the system environment.
+By default, the change is saved back to the .Renviron file (\code{in_place = TRUE}), but the function
+can also return a modified list without saving (\code{in_place = FALSE}). The function considers both
+user and project scopes as defined by the \code{scope} argument when loading the .Renviron file if no
+list is provided.
 }
 \examples{
 \dontrun{
-# Remove the CENSUS_API_KEY variable from the .Renviron file
+# Remove the CENSUS_API_KEY variable from the .Renviron file and the system environment
 renviron_delete("CENSUS_API_KEY")
 
-# Remove the variable from a provided list without saving
-env_list <- renviron_load()  # Load current environment variables
+# Remove the variable from a provided list without saving and from the system environment
+env_list <- renviron_load() # Load current environment variables
 modified_env <- renviron_delete("OBSOLETE_VAR", .renviron = env_list, in_place = FALSE)
 print(modified_env)
 }

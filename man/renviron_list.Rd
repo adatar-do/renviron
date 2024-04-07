@@ -2,32 +2,40 @@
 % Please edit documentation in R/renviron_list.R
 \name{renviron_list}
 \alias{renviron_list}
-\title{List Environment Variables}
+\title{List and Mask Environment Variables}
 \usage{
-renviron_list(.renviron = NULL)
+renviron_list(.renviron = NULL, scope = c("project", "user"))
 }
 \arguments{
 \item{.renviron}{An optional named list of environment variables to list. If not provided,
-the function will load the variables from the .Renviron file using \code{renviron_load()}.}
+the function will load the variables from the .Renviron file using \code{renviron_load()}
+with the specified scope and mask their values.}
+
+\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when
+loading environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values
+are "user" and "project". The function searches in the order provided. The default order
+is \code{c("project", "user")}.}
 }
 \value{
-A named list of all environment variables and their values. If called without
-the .renviron argument, it returns the list of variables from the .Renviron file.
+A named list of all environment variables with their values masked. For example,
+all values might be replaced with "****" to hide sensitive information. If called without
+the .renviron argument, it returns the list of variables from the .Renviron file within the
+specified scope with masked values.
 }
 \description{
-This function lists all environment variables currently set in the .Renviron file or
-in a provided named list of environment variables. It provides a quick overview of
-the variables and their values, which can be useful for debugging or auditing.
+This function lists all environment variables currently set in the .Renviron file, considering
+both user and project scopes as defined by the \code{scope} argument, or in a provided named list of
+environment variables, masking their values for security purposes. This provides a quick overview
+of the variables, which can be useful for debugging or auditing without exposing sensitive information.
 }
 \examples{
 \dontrun{
-# List all environment variables from the .Renviron file
-env_vars <- renviron_list()
-print(env_vars)
+# List and mask all environment variables from the .Renviron file within the specified scope
+renviron_list()
 
-# List variables from a provided named list
+# List and mask variables from a provided named list
 custom_env <- list(API_KEY = "12345", SECRET = "s3cr3t")
-print(renviron_list(.renviron = custom_env))
+renviron_list(.renviron = custom_env)
 }
 
 }
