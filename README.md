@@ -26,11 +26,6 @@ toolkit is essential for projects that require precise control over
 environment configurations, such as managing API keys, database
 credentials, and application-specific settings.
 
-``` r
-devtools::load_all()
-#> ℹ Loading renviron
-```
-
 ## Installation
 
 You can install the development version of `renviron` from [Adatar’s
@@ -40,9 +35,7 @@ r-universe](https://adatar-do.r-universe.dev/renviron) with:
 install.packages("renviron", repos = "https://adatar-do.r-universe.dev")
 ```
 
-## Usage
-
-### Understanding Scope
+## Understanding Scope
 
 When working in RStudio, the project-level `.Renviron` file is
 automatically loaded upon opening a project, making environment
@@ -86,7 +79,7 @@ RStudio, which automatically loads project-level `.Renviron` files.
   project-specific settings take precedence, while still allowing access
   to user-level configurations.
 
-### Usage Across Functions
+### Scope Across Functions
 
 All main functions in the `renviron` package, including `renviron_load`,
 `renviron_list`, `renviron_add`, `renviron_get`, and `renviron_delete`,
@@ -103,7 +96,8 @@ from user scope, you can use:
 renviron_load("user")
 ```
 
-Now you can access the user-level variables in your R environment.
+Now you can access both, the project-level and the user-level variables
+in your R environment.
 
 To add a new variable to the user-level `.Renviron` file, bypassing the
 project-level file, you can specify:
@@ -116,6 +110,8 @@ This uniform approach to `scope` across the `renviron` package enhances
 your control over where and how environment variables are managed within
 your R environment, catering to a wide range of use cases from
 project-specific configurations to global settings.
+
+## Usage
 
 ### Loading environment variables
 

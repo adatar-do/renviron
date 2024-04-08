@@ -28,6 +28,9 @@ knitr::opts_chunk$set(
 
 
 ```{r}
+#| include=FALSE
+
+
 devtools::load_all()
 ```
 
@@ -40,9 +43,8 @@ You can install the development version of `renviron` from [Adatar's r-universe]
 install.packages("renviron", repos = "https://adatar-do.r-universe.dev")
 ```
 
-## Usage
 
-### Understanding Scope
+## Understanding Scope
 
 When working in RStudio, the project-level `.Renviron` file is automatically loaded upon opening a project, making environment variables defined at the project scope readily available. However, `renviron` extends this functionality by allowing management of environment variables across both project and user scopes:
 
@@ -61,7 +63,7 @@ The `scope` argument is a powerful feature in the `renviron` package that provid
 
 - **Both Scopes**: You can also specify both scopes by using `scope = c("project", "user")`. In this case, `renviron` functions will prioritize the project scope over the user scope when reading, adding, or updating environment variables. This ensures that project-specific settings take precedence, while still allowing access to user-level configurations.
 
-### Usage Across Functions
+### Scope Across Functions
 
 All main functions in the `renviron` package, including `renviron_load`, `renviron_list`, `renviron_add`, `renviron_get`, and `renviron_delete`, support the `scope` argument. This consistency allows you to seamlessly manage your environment variables with precision, whether you're loading variables, adding new ones, retrieving specific variables, or deleting them.
 
@@ -71,7 +73,7 @@ For example, RStudio will automatically load the project-level `.Renviron` file 
 renviron_load("user")
 ```
 
-Now you can access the user-level variables in your R environment.
+Now you can access both, the project-level and the user-level variables in your R environment.
 
 To add a new variable to the user-level `.Renviron` file, bypassing the project-level file, you can specify:
 
@@ -81,6 +83,8 @@ renviron_add("GLOBAL_API_KEY", "12345abcde", scope = "user")
 
 This uniform approach to `scope` across the `renviron` package enhances your control over where and how environment variables are managed within your R environment, catering to a wide range of use cases from project-specific configurations to global settings.
 
+
+## Usage
 
 ### Loading environment variables
 
