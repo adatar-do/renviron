@@ -32,5 +32,5 @@
 #'
 #' @export
 renviron_path <- function(scope = c("project", "user")) {
-  scoped_path_r(scope, ".Renviron", envvar = "R_ENVIRON_USER")
+  scoped_path_r(scope, '.Renviron', envvar = "R_ENVIRON_USER")
 }

@@ -26,6 +26,26 @@ toolkit is essential for projects that require precise control over
 environment configurations, such as managing API keys, database
 credentials, and application-specific settings.
 
+In many instances, I found myself needing to programmatically manage the
+`.Renviron` file. **And you know, if you have to do it twice, try to
+automate it.** While there are libraries in R that allow loading
+environment variables from `.Renviron` files or even `.env` files,
+`renviron` does not limit itself to just loading these variables. It
+also allows for the creation, modification, and deletion of environment
+variables directly from R.
+
+This comprehensive approach to environment variable management makes
+renviron an invaluable tool for R users who need to dynamically adjust
+their setup according to different project needs or security guidelines.
+Whether you’re setting up a new project, integrating with other
+software, or simply organizing your work environment, renviron provides
+a robust, flexible toolkit to manage your environment variables
+effectively and securely.
+
+<!--
+Agregar la capacidad de especificar el nombre del archivo, sin embargo sigue siendo capaz de encontrarlo a nivel de proyecto (debilidad?) y user (FORTALEZA). AUnque se recomienda mantener la estructura básica de las variables de entorno en el archivo .Renviron `key=value` (explicar las reglas que espera renviron que se cumplan).
+-->
+
 ## Installation
 
 You can install the development version of `renviron` from [Adatar’s
@@ -35,7 +55,7 @@ r-universe](https://adatar-do.r-universe.dev/renviron) with:
 install.packages("renviron", repos = "https://adatar-do.r-universe.dev")
 ```
 
-## Understanding Scope
+## Understanding scope
 
 When working in RStudio, the project-level `.Renviron` file is
 automatically loaded upon opening a project, making environment
@@ -51,7 +71,7 @@ This distinction is crucial for managing environment variables that are
 either specific to a project or meant to be globally accessible across
 multiple projects.
 
-### The Scope Argument
+### The scope argument
 
 The `scope` argument is a powerful feature in the `renviron` package
 that provides flexibility in managing environment variables across
@@ -79,7 +99,7 @@ RStudio, which automatically loads project-level `.Renviron` files.
   project-specific settings take precedence, while still allowing access
   to user-level configurations.
 
-### Scope Across Functions
+### Scope across functions
 
 All main functions in the `renviron` package, including `renviron_load`,
 `renviron_list`, `renviron_add`, `renviron_get`, and `renviron_delete`,
@@ -137,6 +157,26 @@ env <- renviron_load()
 env$SECRET_1
 #> [1] "123abc"
 ```
+
+### Checking for the Existence of a Variable
+
+Before you modify or delete an environment variable, it might be
+necessary to check if it actually exists in the scope you are working
+with. The `renviron_exists` function provides a straightforward way to
+do this:
+
+``` r
+exists <- renviron_exists("API_KEY")
+if (exists) {
+  print("API_KEY exists in the .Renviron file.")
+} else {
+  print("API_KEY does not exist.")
+}
+#> [1] "API_KEY does not exist."
+```
+
+This function can be particularly useful when scripting or when working
+with conditional logic based on the presence of certain variables.
 
 ### Listing all variables
 

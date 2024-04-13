@@ -3,6 +3,7 @@
 export("%>%")
 export(renviron_add)
 export(renviron_delete)
+export(renviron_exists)
 export(renviron_get)
 export(renviron_list)
 export(renviron_load)

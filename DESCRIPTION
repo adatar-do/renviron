@@ -1,6 +1,6 @@
 Package: renviron
 Title: Environment Variable Management for R Projects
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: 
     c(person("Daniel E.", "de la Rosa", , "me@dnldelarosa.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5965-5277")),
