@@ -19,14 +19,14 @@ knitr::opts_chunk$set(
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/adatar-do/renviron/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/adatar-do/renviron/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/adatar-do/renviron/branch/main/graph/badge.svg)](https://codecov.io/gh/adatar-do/renviron?branch=main)
+[![Codecov test coverage](https://codecov.io/gh/adatar-do/renviron/branch/main/graph/badge.svg)](https://app.codecov.io/gh/adatar-do/renviron?branch=main)
 [![CRAN status](https://www.r-pkg.org/badges/version/renviron)](https://CRAN.R-project.org/package=renviron)
 ![r-universe](https://adatar-do.r-universe.dev/badges/renviron)
 <!-- badges: end -->
 
 `renviron` is an R package designed to streamline the management of environment variables within R projects. It facilitates the creation, modification, and deletion of variables in the `.Renviron` file, enabling dynamic environment variable handling directly from R. This toolkit is essential for projects that require precise control over environment configurations, such as managing API keys, database credentials, and application-specific settings.
 
-In many instances, I found myself needing to programmatically manage the `.Renviron` file. **And you know, if you have to do it twice, try to automate it.** While there are libraries in R that allow loading environment variables from `.Renviron` files or even `.env` files, `renviron` does not limit itself to just loading these variables. It also allows for the creation, modification, and deletion of environment variables directly from R.
+In many instances, We found ourselves needing to programmatically manage the `.Renviron` file. **And you know, if you have to do it twice, try to automate it.** While there are libraries in R that allow loading environment variables from `.Renviron` files or even `.env` files, `renviron` does not limit itself to just loading these variables. It also allows for the creation, modification, and deletion of environment variables directly from R.
 
 This comprehensive approach to environment variable management makes renviron an invaluable tool for R users who need to dynamically adjust their setup according to different project needs or security guidelines. Whether you're setting up a new project, integrating with other software, or simply organizing your work environment, renviron provides a robust, flexible toolkit to manage your environment variables effectively and securely.
 
@@ -114,6 +114,26 @@ Alternatively, you can capture the variables directly into a named list
 env <- renviron_load()
 env$SECRET_1
 ```
+
+You can also load other env files by specifying its name
+
+```{r}
+renviron_load(.file = ".env")
+```
+
+Additionally, you can specify what variables to load by passing a vector of names
+
+```{r}
+renviron_load(.vars = c("DATAFARO_TOKEN", "API_KEY"))
+```
+
+You can also unset all environment variables loaded from the `.Renviron` file.
+
+```{r}
+# Unset all environment variables loaded from .Renviron
+renviron_unset_all()
+```
+
 
 ### Checking for the Existence of a Variable
 

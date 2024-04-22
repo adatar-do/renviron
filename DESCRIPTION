@@ -1,12 +1,12 @@
 Package: renviron
 Title: Environment Variable Management for R Projects
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
     c(person("Daniel E.", "de la Rosa", , "me@dnldelarosa.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5965-5277")),
     person(given = "Adatar",
            role = "cph"))
-Description: The `renviron` package provides a comprehensive suite of tools for managing environment variables within R projects, facilitating the creation, modification, and deletion of variables stored in the `.Renviron` file. Designed to enhance project configuration and security by enabling dynamic environment variable handling directly from R, `renviron` supports a range of operations including loading current environment settings, adding or updating variables, removing variables, and listing all set variables. This toolkit is particularly useful for projects requiring precise control over environment configurations, aiding in the seamless management of sensitive information such as API keys, database credentials, and application-specific settings. The intuitive interface and extensive functionality make it an essential utility for developers and data scientists looking to streamline their project setups.
+Description: The `renviron` package is an essential toolkit for managing environment variables in R projects, offering advanced capabilities for modifying, creating, and deleting variables within `.Renviron` and other custom configuration files. This package supports dynamic handling of environment variables directly from R, making it invaluable for projects that demand precise configuration management. Key features include the ability to specify custom file names for environment settings, selectively load variables, and ensure secure handling of sensitive data like API keys and database credentials. Whether updating single variables, managing global settings across multiple projects, or securely masking variable values for confidentiality, `renviron` provides robust functionality wrapped in an easy-to-use interface. This makes it an ideal solution for developers and data scientists seeking efficient and secure environment variable management.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -17,3 +17,6 @@ Imports:
     magrittr,
     readr,
     usethis
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

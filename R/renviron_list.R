@@ -1,43 +1,48 @@
-#' List and Mask Environment Variables
+#' List and mask environment variables
 #'
-#' This function lists all environment variables currently set in the .Renviron file, considering
-#' both user and project scopes as defined by the `scope` argument, or in a provided named list of
-#' environment variables, masking their values for security purposes. This provides a quick overview
-#' of the variables, which can be useful for debugging or auditing without exposing sensitive information.
+#' This function provides a secure way to view all environment variables from the .Renviron file
+#' or a provided list, with their values masked for security purposes. It can operate over both
+#' user and project scopes as defined by the `scope` argument when loading from the .Renviron file.
+#' This feature is useful for debugging or auditing without compromising sensitive information by
+#' exposing actual values of the variables.
 #'
-#' @param .renviron An optional named list of environment variables to list. If not provided,
-#'        the function will load the variables from the .Renviron file using `renviron_load()`
-#'        with the specified scope and mask their values.
-#' @param scope A character vector specifying the scope(s) to search for the .Renviron file when
-#'        loading environment variables. This is used only when `.renviron` is `NULL`. Valid values
-#'        are "user" and "project". The function searches in the order provided. The default order
-#'        is `c("project", "user")`.
+#' @param .renviron An optional named list of environment variables that should be listed. If not
+#'        provided, the function will load the variables from the .Renviron file using `renviron_load()`
+#'        and mask their values according to the specified scope.
+#' @param ... Additional arguments that are passed to the `renviron_load()` function:
+#'        - `scope`: A character vector specifying the scope(s) to search for the .Renviron file.
+#'          Valid options are "user" and "project", with "project" typically having precedence unless
+#'          otherwise specified. This determines which .Renviron file the variables are loaded from
+#'          if `.renviron` is not provided. The default is `c("project", "user")`.
+#'        - `.file`: Specifies the filename to be considered as the environment file within the
+#'          specified scope. Default is ".Renviron".
 #'
-#' @return A named list of all environment variables with their values masked. For example,
-#'         all values might be replaced with "****" to hide sensitive information. If called without
-#'         the .renviron argument, it returns the list of variables from the .Renviron file within the
-#'         specified scope with masked values.
+#' @return A named list of all environment variables with their values masked as "*****".
+#'         This list includes all variables found in the specified scope if `.renviron` is not provided,
+#'         or from the provided list otherwise. This method ensures that no sensitive data is displayed,
+#'         while still allowing users to understand which variables are set.
 #'
 #' @examples
 #' \dontrun{
-#' # List and mask all environment variables from the .Renviron file within the specified scope
+#' # List and mask all environment variables from the .Renviron file within the default scope
 #' renviron_list()
 #'
-#' # List and mask variables from a provided named list
+#' # Directly list and mask variables from a custom provided named list
 #' custom_env <- list(API_KEY = "12345", SECRET = "s3cr3t")
-#' renviron_list(.renviron = custom_env)
+#' masked_env <- renviron_list(.renviron = custom_env)
+#' print(masked_env)
 #'}
 #'
 #' @export
-renviron_list <- function(.renviron = NULL, scope = c("project", "user")) {
+renviron_list <- function(.renviron = NULL, ...) {
   if (is.null(.renviron)) {
-    env <- renviron_load(scope)  # Cargar las variables de entorno del archivo .Renviron
+    env <- renviron_load(...)  # Cargar las variables de entorno del archivo .Renviron
   } else {
     env <- .renviron  # Usar la lista de variables de entorno proporcionada
   }
 
   # Enmascarar los valores de las variables de entorno
-  env_masked <- sapply(env, function(x) "****")
+  env_masked <- sapply(env, function(x) "*****")
 
   # Retornar la lista de variables de entorno con valores enmascarados
   return(env_masked)

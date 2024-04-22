@@ -12,7 +12,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/adatar-do/renviron/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/adatar-do/renviron/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/adatar-do/renviron/branch/main/graph/badge.svg)](https://codecov.io/gh/adatar-do/renviron?branch=main)
+coverage](https://codecov.io/gh/adatar-do/renviron/branch/main/graph/badge.svg)](https://app.codecov.io/gh/adatar-do/renviron?branch=main)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/renviron)](https://CRAN.R-project.org/package=renviron)
 ![r-universe](https://adatar-do.r-universe.dev/badges/renviron)
@@ -26,8 +26,8 @@ toolkit is essential for projects that require precise control over
 environment configurations, such as managing API keys, database
 credentials, and application-specific settings.
 
-In many instances, I found myself needing to programmatically manage the
-`.Renviron` file. **And you know, if you have to do it twice, try to
+In many instances, We found ourselves needing to programmatically manage
+the `.Renviron` file. **And you know, if you have to do it twice, try to
 automate it.** While there are libraries in R that allow loading
 environment variables from `.Renviron` files or even `.env` files,
 `renviron` does not limit itself to just loading these variables. It
@@ -158,6 +158,27 @@ env$SECRET_1
 #> [1] "123abc"
 ```
 
+You can also load other env files by specifying its name
+
+``` r
+renviron_load(.file = ".env")
+```
+
+Additionally, you can specify what variables to load by passing a vector
+of names
+
+``` r
+renviron_load(.vars = c("DATAFARO_TOKEN", "API_KEY"))
+```
+
+You can also unset all environment variables loaded from the `.Renviron`
+file.
+
+``` r
+# Unset all environment variables loaded from .Renviron
+renviron_unset_all()
+```
+
 ### Checking for the Existence of a Variable
 
 Before you modify or delete an environment variable, it might be
@@ -187,8 +208,8 @@ all the variables without revealing their values.
 
 ``` r
 renviron_list()
-#>       SECRET_1   GITHUB_TOKEN DATAFARO_TOKEN        NEW_VAR 
-#>         "****"         "****"         "****"         "****"
+#>       SECRET_1   GITHUB_TOKEN DATAFARO_TOKEN        NEW_VAR           Hola 
+#>        "*****"        "*****"        "*****"        "*****"        "*****"
 ```
 
 ### Adding a new variable
@@ -208,8 +229,8 @@ This will add or update the variable `NEW_VAR` with the value
 ``` r
 renviron_add("NEW_VAR", "new_value", in_place = TRUE, confirm = FALSE)
 renviron_list()
-#>       SECRET_1   GITHUB_TOKEN DATAFARO_TOKEN        NEW_VAR 
-#>         "****"         "****"         "****"         "****"
+#>       SECRET_1   GITHUB_TOKEN DATAFARO_TOKEN        NEW_VAR           Hola 
+#>        "*****"        "*****"        "*****"        "*****"        "*****"
 ```
 
 Note: The `confirm` argument is set to `TRUE` by default, which will

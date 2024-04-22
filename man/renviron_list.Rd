@@ -2,40 +2,45 @@
 % Please edit documentation in R/renviron_list.R
 \name{renviron_list}
 \alias{renviron_list}
-\title{List and Mask Environment Variables}
+\title{List and mask environment variables}
 \usage{
-renviron_list(.renviron = NULL, scope = c("project", "user"))
+renviron_list(.renviron = NULL, ...)
 }
 \arguments{
-\item{.renviron}{An optional named list of environment variables to list. If not provided,
-the function will load the variables from the .Renviron file using \code{renviron_load()}
-with the specified scope and mask their values.}
+\item{.renviron}{An optional named list of environment variables that should be listed. If not
+provided, the function will load the variables from the .Renviron file using \code{renviron_load()}
+and mask their values according to the specified scope.}
 
-\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when
-loading environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values
-are "user" and "project". The function searches in the order provided. The default order
-is \code{c("project", "user")}.}
+\item{...}{Additional arguments that are passed to the \code{renviron_load()} function:
+- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
+Valid options are "user" and "project", with "project" typically having precedence unless
+otherwise specified. This determines which .Renviron file the variables are loaded from
+if \code{.renviron} is not provided. The default is \code{c("project", "user")}.
+- \code{.file}: Specifies the filename to be considered as the environment file within the
+specified scope. Default is ".Renviron".}
 }
 \value{
-A named list of all environment variables with their values masked. For example,
-all values might be replaced with "****" to hide sensitive information. If called without
-the .renviron argument, it returns the list of variables from the .Renviron file within the
-specified scope with masked values.
+A named list of all environment variables with their values masked as "*****".
+This list includes all variables found in the specified scope if \code{.renviron} is not provided,
+or from the provided list otherwise. This method ensures that no sensitive data is displayed,
+while still allowing users to understand which variables are set.
 }
 \description{
-This function lists all environment variables currently set in the .Renviron file, considering
-both user and project scopes as defined by the \code{scope} argument, or in a provided named list of
-environment variables, masking their values for security purposes. This provides a quick overview
-of the variables, which can be useful for debugging or auditing without exposing sensitive information.
+This function provides a secure way to view all environment variables from the .Renviron file
+or a provided list, with their values masked for security purposes. It can operate over both
+user and project scopes as defined by the \code{scope} argument when loading from the .Renviron file.
+This feature is useful for debugging or auditing without compromising sensitive information by
+exposing actual values of the variables.
 }
 \examples{
 \dontrun{
-# List and mask all environment variables from the .Renviron file within the specified scope
+# List and mask all environment variables from the .Renviron file within the default scope
 renviron_list()
 
-# List and mask variables from a provided named list
+# Directly list and mask variables from a custom provided named list
 custom_env <- list(API_KEY = "12345", SECRET = "s3cr3t")
-renviron_list(.renviron = custom_env)
+masked_env <- renviron_list(.renviron = custom_env)
+print(masked_env)
 }
 
 }

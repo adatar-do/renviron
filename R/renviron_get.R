@@ -1,21 +1,21 @@
-#' Retrieve a Specific Environment Variable from the .Renviron File
+#' Retrieve a specific environment variable from the environment file
 #'
 #' This function fetches the value of a specified environment variable from the .Renviron file,
-#' considering both user and project scopes as defined by the `scope` argument. It relies on
-#' `renviron_load()` to load the environment variables into a named list, from which the value
-#' of the specified key is retrieved. If the `.renviron` argument is provided, it uses this list
-#' directly, bypassing the need to load from the file. The function is particularly useful for
-#' accessing specific environment variables in a secure and controlled manner.
+#' considering both user and project scopes as defined by the `scope` argument when loading the file.
+#' If the `.renviron` argument is provided, it uses this list directly, bypassing the need to load
+#' from the file. This is particularly useful for accessing specific environment variables in a secure
+#' and controlled manner, especially during testing or when working with a dynamically modified environment.
 #'
 #' @param key A character string specifying the name of the environment variable to retrieve.
-#' @param .renviron An optional named list of environment variables. If provided, the function will
-#'        use this list instead of loading the .Renviron file via `renviron_load()`. This can be useful
-#'        for testing or when working with a modified set of environment variables that has not been
-#'        saved back to the file.
-#' @param scope A character vector specifying the scope(s) to search for the .Renviron file when
-#'        loading environment variables. This is used only when `.renviron` is `NULL`. Valid values
-#'        are "user" and "project". The function searches in the order provided. The default order
-#'        is `c("project", "user")`.
+#' @param .renviron An optional named list of environment variables to use instead of loading from
+#'        the .Renviron file. This can be useful for testing or when working with a modified set
+#'        of environment variables that has not been saved back to the file.
+#' @param ... Additional arguments that are passed to the `renviron_load()` function:
+#'        - `scope`: A character vector specifying the scope(s) to search for the .Renviron file.
+#'          Valid values are "user" and "project", with "project" typically having precedence unless
+#'          otherwise specified. This is used only when `.renviron` is `NULL`. The default is `c("project", "user")`.
+#'        - `.file`: Specifies the filename to be considered as the environment file within the specified scope.
+#'          Default is ".Renviron".
 #'
 #' @return The value of the environment variable corresponding to `key`, if it exists.
 #'         Returns `NULL` if the key does not exist in the list or .Renviron file within the specified scope.
@@ -36,11 +36,17 @@
 #' }
 #'
 #' @export
-renviron_get <- function(key, .renviron = NULL, scope = c("project", "user")) {
+renviron_get <- function(key, .renviron = NULL, ...) {
   if (is.null(.renviron)) {
-    env <- renviron_load(scope)  # Load environment variables if not provided
+    env <- renviron_load(...)  # Load environment variables if not provided
   } else {
     env <- .renviron  # Use the provided list of environment variables
   }
-  return(env[[key]])  # Retrieve the value for the specified key
+  .res <- env[key]
+
+  if (!is.null(.res)) {
+    do.call(Sys.setenv, .res)  # Update the system environment
+  }
+
+  Sys.getenv(key)  # Return the value of the specified key
 }

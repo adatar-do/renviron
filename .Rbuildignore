@@ -6,3 +6,5 @@
 ^hex\.webp$
 ^hex\.png$
 ^\.github$
+^\.env$
+^codecov\.yml$

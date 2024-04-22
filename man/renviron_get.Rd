@@ -2,22 +2,23 @@
 % Please edit documentation in R/renviron_get.R
 \name{renviron_get}
 \alias{renviron_get}
-\title{Retrieve a Specific Environment Variable from the .Renviron File}
+\title{Retrieve a specific environment variable from the environment file}
 \usage{
-renviron_get(key, .renviron = NULL, scope = c("project", "user"))
+renviron_get(key, .renviron = NULL, ...)
 }
 \arguments{
 \item{key}{A character string specifying the name of the environment variable to retrieve.}
 
-\item{.renviron}{An optional named list of environment variables. If provided, the function will
-use this list instead of loading the .Renviron file via \code{renviron_load()}. This can be useful
-for testing or when working with a modified set of environment variables that has not been
-saved back to the file.}
+\item{.renviron}{An optional named list of environment variables to use instead of loading from
+the .Renviron file. This can be useful for testing or when working with a modified set
+of environment variables that has not been saved back to the file.}
 
-\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when
-loading environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values
-are "user" and "project". The function searches in the order provided. The default order
-is \code{c("project", "user")}.}
+\item{...}{Additional arguments that are passed to the \code{renviron_load()} function:
+- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
+Valid values are "user" and "project", with "project" typically having precedence unless
+otherwise specified. This is used only when \code{.renviron} is \code{NULL}. The default is \code{c("project", "user")}.
+- \code{.file}: Specifies the filename to be considered as the environment file within the specified scope.
+Default is ".Renviron".}
 }
 \value{
 The value of the environment variable corresponding to \code{key}, if it exists.
@@ -25,11 +26,10 @@ Returns \code{NULL} if the key does not exist in the list or .Renviron file with
 }
 \description{
 This function fetches the value of a specified environment variable from the .Renviron file,
-considering both user and project scopes as defined by the \code{scope} argument. It relies on
-\code{renviron_load()} to load the environment variables into a named list, from which the value
-of the specified key is retrieved. If the \code{.renviron} argument is provided, it uses this list
-directly, bypassing the need to load from the file. The function is particularly useful for
-accessing specific environment variables in a secure and controlled manner.
+considering both user and project scopes as defined by the \code{scope} argument when loading the file.
+If the \code{.renviron} argument is provided, it uses this list directly, bypassing the need to load
+from the file. This is particularly useful for accessing specific environment variables in a secure
+and controlled manner, especially during testing or when working with a dynamically modified environment.
 }
 \examples{
 \dontrun{

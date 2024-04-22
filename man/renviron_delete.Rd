@@ -2,31 +2,29 @@
 % Please edit documentation in R/renviron_delete.R
 \name{renviron_delete}
 \alias{renviron_delete}
-\title{Remove an Environment Variable}
+\title{Remove an environment variable from the environment file and system}
 \usage{
-renviron_delete(
-  key,
-  .renviron = NULL,
-  in_place = FALSE,
-  scope = c("project", "user"),
-  ...
-)
+renviron_delete(key, .renviron = NULL, in_place = FALSE, ...)
 }
 \arguments{
 \item{key}{A character string specifying the name of the environment variable to remove.}
 
-\item{.renviron}{An optional named list of environment variables from which to remove the variable.
-If provided, the function will modify this list instead of the default .Renviron file. This
-can be useful for testing or when working with a temporary set of environment variables.}
+\item{.renviron}{An optional named list of environment variables from which to remove the specified variable.
+If provided, the function modifies this list instead of automatically loading the .Renviron file.
+This can be particularly useful for testing or handling temporary environment changes.}
 
 \item{in_place}{A logical flag indicating whether to save the changes back to the .Renviron
-file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{TRUE}.}
+file (\code{TRUE}) or just modify the environment variables temporarily (\code{FALSE}). The default is \code{TRUE}.
+When \code{FALSE}, changes are made only to the runtime environment and the provided list, without
+affecting the .Renviron file.}
 
-\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file when loading
-environment variables. This is used only when \code{.renviron} is \code{NULL}. Valid values are "user"
-and "project". The function searches in the order provided. The default order is \code{c("project", "user")}.}
-
-\item{...}{Additional arguments to be passed to \code{renviron_save()} if \code{in_place = TRUE}.}
+\item{...}{Additional arguments that are passed to the \code{renviron_save()} function if \code{in_place = TRUE}.
+This can include:
+- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file when loading
+environment variables. Valid values are "user" and "project", with "project" given priority if not specified.
+- \code{.file}: Specifies the filename to be considered as the environment file within the scope. Default is ".Renviron".
+- \code{confirm}: A logical flag indicating whether to confirm changes before saving the .Renviron file.
+Useful for preventing accidental modifications.}
 }
 \value{
 If \code{in_place} is \code{TRUE}, the function invisibly returns the modified list of environment
@@ -35,22 +33,22 @@ If \code{in_place} is \code{FALSE}, it returns the modified list without saving,
 manipulation or inspection, but still removes the variable from the system environment.
 }
 \description{
-This function removes a specified environment variable from the .Renviron file or a provided
-list of environment variables. It also attempts to remove the variable from the system environment.
-By default, the change is saved back to the .Renviron file (\code{in_place = TRUE}), but the function
-can also return a modified list without saving (\code{in_place = FALSE}). The function considers both
-user and project scopes as defined by the \code{scope} argument when loading the .Renviron file if no
-list is provided.
+This function removes a specified environment variable from the .Renviron file and the system environment.
+By default, the change is saved back to the .Renviron file (\code{in_place = TRUE}), but the function can also
+operate without saving (\code{in_place = FALSE}), which allows for temporary modification of environment variables
+for testing or other purposes. It is designed to handle both user and project scopes effectively when no
+custom list is provided.
 }
 \examples{
 \dontrun{
-# Remove the CENSUS_API_KEY variable from the .Renviron file and the system environment
+# Permanently remove the CENSUS_API_KEY variable from both the .Renviron file and system environment
 renviron_delete("CENSUS_API_KEY")
 
-# Remove the variable from a provided list without saving and from the system environment
+# Temporarily remove the OBSOLETE_VAR from the current environment settings 
+without affecting the .Renviron file
 env_list <- renviron_load() # Load current environment variables
 modified_env <- renviron_delete("OBSOLETE_VAR", .renviron = env_list, in_place = FALSE)
-print(modified_env)
+print(modified_env) # OBSOLETE_VAR will not be part of this list
 }
 
 }

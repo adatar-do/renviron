@@ -1,40 +1,42 @@
-#' Save Environment Variables to the .Renviron File
+#' Save environment variables to the environment file
 #'
-#' This function takes a named list of environment variables and saves them to the .Renviron file,
-#' considering both user and project scopes as defined by the `scope` argument. The location of the
-#' .Renviron file is determined by `renviron_path()`. If `confirm` is TRUE, the function will prompt
-#' for user confirmation before overwriting the file. This safety mechanism is useful for programmatically
-#' updating or setting environment variables that need to persist across R sessions, while helping to
-#' prevent accidental overwrites.
+#' This function takes a named list of environment variables and saves them to the appropriate
+#' .Renviron file based on the specified scope. The function prompts for user confirmation before
+#' overwriting the file if `confirm` is set to TRUE, helping to prevent accidental data loss.
+#' This feature is particularly useful for programmatically updating or setting environment variables
+#' that need to persist across R sessions.
 #'
 #' @param .Renviron A named list where each name is an environment variable key and each value is
 #'        the corresponding value for that key. The function expects the list values to be character strings.
-#' @param confirm Logical; if TRUE, the function will prompt for user confirmation before overwriting
-#'        the .Renviron file. This is set to TRUE by default to avoid unintentional overwrites, but can
-#'        be set to FALSE for automated scripts or non-interactive use cases.
-#' @param scope A character vector specifying the scope(s) to search for the .Renviron file when saving
-#'        environment variables. Valid values are "user" and "project". The function will save to the
-#'        .Renviron file in the specified scope, with "project" being the default if not specified.
+#'        Example: `list(CENSUS_API_KEY = "12345", GITHUB_PAT = "abcde")`.
+#' @param confirm Logical; if TRUE, the function prompts for user confirmation before overwriting
+#'        the .Renviron file. This helps to prevent unintended overwrites. Default is TRUE.
+#'        Set this to FALSE for automated scripts or non-interactive session where confirmation is not desired.
+#' @param ... Additional arguments to configure the operation:
+#'        - `scope`: A character vector specifying the scope(s) where the .Renviron file is located.
+#'          Valid options are "user" for the user-level file or "project" for the project-level file.
+#'          Default is "project". The function saves to the .Renviron file in the specified scope.
+#'        - `.file`: Optionally specify a different filename to save the environment variables to.
+#'          Default is ".Renviron".
 #'
-#' @return This function performs a file write operation and does not return any value. It operates
-#'         invisibly, emphasizing its side effect of modifying the .Renviron file rather than producing
-#'         output.
+#' @return This function does not return a value and operates invisibly, with the primary side effect
+#'         being the modification of the .Renviron file.
 #'
 #' @examples
 #' \dontrun{
-#' # Assuming you want to set or update environment variables
+#' # Assume you want to set or update environment variables
 #' new_env <- list(CENSUS_API_KEY = "12345", GITHUB_PAT = "abcde")
 #'
-#' # Save these variables to the .Renviron file, with confirmation prompt
+#' # Save these variables to the .Renviron file, with confirmation
 #' renviron_save(new_env, confirm = TRUE)
 #'
-#' # Save variables without confirmation (useful for scripts)
+#' # Automatically save variables without confirmation for automated scripts
 #' renviron_save(new_env, confirm = FALSE)
 #'}
 #'
 #' @export
-renviron_save <- function(.Renviron, confirm = TRUE, scope = c("project", "user")){
-  file_path <- renviron_path(scope)
+renviron_save <- function(.Renviron, confirm = TRUE, ...){
+  file_path <- renviron_path(...)
 
   if (confirm) {
     cat("You are about to overwrite the .Renviron file at:", file_path, "\n")

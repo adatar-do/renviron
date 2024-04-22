@@ -2,43 +2,52 @@
 % Please edit documentation in R/renviron_load.R
 \name{renviron_load}
 \alias{renviron_load}
-\title{Load and Set Environment Variables from the .Renviron File}
+\title{Load Environment Variables from the .Renviron File}
 \usage{
-renviron_load(scope = c("project", "user"))
+renviron_load(
+  scope = c("project", "user"),
+  .file = ".Renviron",
+  .vars = NULL,
+  ...
+)
 }
 \arguments{
 \item{scope}{A character vector specifying the scope(s) to search for the .Renviron file.
 Valid values are "user" and "project". The function searches in the order provided.
 The default order is \code{c("project", "user")}. The "user" scope refers to the user's home
 directory, while the "project" scope refers to the current project directory.}
+
+\item{.file}{Optional filename to search within the specified scope.}
+
+\item{.vars}{Optional character vector specifying which variables to load; if NULL, all variables are loaded.}
+
+\item{...}{Additional arguments passed to other internal functions.}
 }
 \value{
-Invisibly returns a named list where each element corresponds to an environment
-variable loaded from the .Renviron file. This list is also set in the system environment.
-Users can optionally capture this list in a variable for more controlled access.
+A named list of environment variables set in the system environment, invisibly returned.
 }
 \description{
 This function reads the .Renviron file, considering both user and project scopes as defined by the \code{scope} argument.
-It loads the variables defined within the file into a named list and sets them in the system environment. Variables
-should be in the \code{KEY=VALUE} format. Outer quotes around the value are optionally removed. To minimize the risk of
-sensitive information exposure, the function can return the list of variables invisibly, or users can capture it
-in a variable for more controlled access.
-}
-\details{
-In RStudio, the project-level .Renviron file is automatically loaded when a project is opened, making the
-project scope variables readily available. However, this function is particularly useful for loading variables
-from the user scope, where you might store global secrets or configurations that apply across multiple projects.
-By explicitly specifying the \code{user} scope, you can ensure that these global settings are loaded even when
-working within the context of a specific project in RStudio.
+It loads the variables defined within the file into a named list and sets them in the system environment. Only lines
+that follow the pattern key='value' or key="value" (where quotes are optional and can be single or double) are processed.
+Variables should be in the \code{KEY=VALUE} format, with optional outer quotes around the value. Lines that do not match
+this format are ignored.
 }
 \examples{
 \dontrun{
-# Load environment variables from the .Renviron file and set them in the system environment
-renviron_load()
-Sys.getenv("CENSUS_API_KEY")
-
-# Alternatively, capture the list of environment variables for more controlled access
+# Load and set environment variables from the .Renviron file
 env_vars <- renviron_load()
-print(env_vars$CENSUS_API_KEY)
+
+# Load and set specific environment variables from the .Renviron file
+env_vars <- renviron_load(.vars = c("CENSUS_API_KEY", "GITHUB_PAT"))
+
+# Load and set environment variables from a custom file
+env_vars <- renviron_load(.file = ".env")
+
+# Load and set environment variables from the user scope only
+env_vars <- renviron_load(scope = "user")
+
+
 }
+
 }
