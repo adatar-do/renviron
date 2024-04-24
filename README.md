@@ -52,7 +52,7 @@ You can install the development version of `renviron` from [Adatar’s
 r-universe](https://adatar-do.r-universe.dev/renviron) with:
 
 ``` r
-install.packages("renviron", repos = "https://adatar-do.r-universe.dev")
+install.packages("renviron", repos = c("https://adatar-do.r-universe.dev", "https://cloud.r-project.org"))
 ```
 
 ## Understanding scope
