@@ -4,7 +4,12 @@
 \alias{renviron_path}
 \title{Retrieve the path to the .Renviron file}
 \usage{
-renviron_path(scope = c("project", "user"), .file = ".Renviron", ...)
+renviron_path(
+  scope = c("project", "user"),
+  .file = ".Renviron",
+  verbosity = 1,
+  ...
+)
 }
 \arguments{
 \item{scope}{A character string or vector specifying the scope to search for the environment file.
@@ -16,6 +21,9 @@ refers to the current project directory.}
 \item{.file}{The name of the environment file to search for within the specified scope(s).
 The default is '.Renviron'. This allows the function to be used to find other environment
 files as needed.}
+
+\item{verbosity}{An integer specifying the level of verbosity. The default is 1, which prints
+a message when the file is found. A value of 0 suppresses all messages.}
 
 \item{...}{Additional parameters passed to the internal path finding function.}
 }

@@ -34,7 +34,7 @@
 #'
 #' @export
 renviron_load <- function(scope = c("project", "user"), .file = ".Renviron", .vars = NULL, verbosity = 1, ...) {
-  file_path <- renviron_path(scope, .file, verbosity = verbosity, ...)
+  file_path <- renviron_path(scope, .file, verbosity, ...)
   if (!file.exists(file_path)) {
     if (verbosity > 0) {
       cli::cli_alert_danger("The .Renviron file could not be found in the specified scope(s).")
