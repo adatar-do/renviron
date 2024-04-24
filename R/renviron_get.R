@@ -42,11 +42,17 @@ renviron_get <- function(key, .renviron = NULL, ...) {
   } else {
     env <- .renviron  # Use the provided list of environment variables
   }
-  .res <- env[key]
 
-  if (!is.null(.res)) {
+  if (key %in% names(env)){
+  .res <- env[key]
     do.call(Sys.setenv, .res)  # Update the system environment
   }
 
-  Sys.getenv(key)  # Return the value of the specified key
+  .value <- Sys.getenv(key)  # Return the value of the specified key
+
+  if (.value == "") {
+    return(NULL)
+  } else {
+    return(.value)
+  }
 }

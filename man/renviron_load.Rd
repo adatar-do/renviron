@@ -8,6 +8,7 @@ renviron_load(
   scope = c("project", "user"),
   .file = ".Renviron",
   .vars = NULL,
+  verbosity = 1,
   ...
 )
 }
@@ -20,6 +21,8 @@ directory, while the "project" scope refers to the current project directory.}
 \item{.file}{Optional filename to search within the specified scope.}
 
 \item{.vars}{Optional character vector specifying which variables to load; if NULL, all variables are loaded.}
+
+\item{verbosity}{An integer specifying the level of verbosity in messages. Default is 1.}
 
 \item{...}{Additional arguments passed to other internal functions.}
 }
@@ -46,8 +49,6 @@ env_vars <- renviron_load(.file = ".env")
 
 # Load and set environment variables from the user scope only
 env_vars <- renviron_load(scope = "user")
-
-
 }
 
 }

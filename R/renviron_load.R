@@ -12,6 +12,7 @@
 #'        directory, while the "project" scope refers to the current project directory.
 #' @param .file Optional filename to search within the specified scope.
 #' @param .vars Optional character vector specifying which variables to load; if NULL, all variables are loaded.
+#' @param verbosity An integer specifying the level of verbosity in messages. Default is 1.
 #' @param ... Additional arguments passed to other internal functions.
 #'
 #' @return A named list of environment variables set in the system environment, invisibly returned.
@@ -29,15 +30,15 @@
 #'
 #' # Load and set environment variables from the user scope only
 #' env_vars <- renviron_load(scope = "user")
-#'
-#'
 #' }
 #'
 #' @export
-renviron_load <- function(scope = c("project", "user"), .file = ".Renviron", .vars = NULL, ...) {
+renviron_load <- function(scope = c("project", "user"), .file = ".Renviron", .vars = NULL, verbosity = 1, ...) {
   file_path <- renviron_path(scope, .file)
   if (!file.exists(file_path)) {
-    cli::cli_alert_danger("The .Renviron file could not be found in the specified scope(s).")
+    if (verbosity > 0) {
+      cli::cli_alert_danger("The .Renviron file could not be found in the specified scope(s).")
+    }
     return(invisible(NULL))
   }
 
