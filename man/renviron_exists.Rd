@@ -16,7 +16,7 @@ considering the specified scope.}
 \item{...}{Additional arguments to \code{renviron_load()} when \code{.renviron} is not provided:
 - \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
 Valid options are "user" and "project". The function searches in the order provided,
-defaulting to \code{c("project", "user")} if not specified. This allows for flexibility in determining
+defaulting to \code{c("user", "project")} if not specified. This allows for flexibility in determining
 where the environment variables are loaded from based on operational needs.
 - \code{.file}: Specifies the filename to consider as the environment file within the scope.
 This can be used to specify a different environment file if needed.}

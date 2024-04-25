@@ -93,7 +93,7 @@ RStudio, which automatically loads project-level `.Renviron` files.
   secrets.
 
 - **Both Scopes**: You can also specify both scopes by using
-  `scope = c("project", "user")`. In this case, `renviron` functions
+  `scope = c("user", "project")`. In this case, `renviron` functions
   will prioritize the project scope over the user scope when reading,
   adding, or updating environment variables. This ensures that
   project-specific settings take precedence, while still allowing access

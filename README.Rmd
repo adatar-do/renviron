@@ -68,7 +68,7 @@ The `scope` argument is a powerful feature in the `renviron` package that provid
 
 - **User Scope**: Setting `scope` to `"user"` directs `renviron` functions to work with the `.Renviron` file in your user home directory. Variables set at this level are accessible across all your R projects, making this scope suitable for global configurations and secrets.
 
-- **Both Scopes**: You can also specify both scopes by using `scope = c("project", "user")`. In this case, `renviron` functions will prioritize the project scope over the user scope when reading, adding, or updating environment variables. This ensures that project-specific settings take precedence, while still allowing access to user-level configurations.
+- **Both Scopes**: You can also specify both scopes by using `scope = c("user", "project")`. In this case, `renviron` functions will prioritize the project scope over the user scope when reading, adding, or updating environment variables. This ensures that project-specific settings take precedence, while still allowing access to user-level configurations.
 
 ### Scope across functions
 

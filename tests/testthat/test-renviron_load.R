@@ -10,7 +10,7 @@ test_that("renviron_load loads all variables correctly", {
   writeLines(c("API_KEY='12345'", "SECRET_KEY='67890'"), path)
 
   # Mock renviron_path to return our temporary file path
-  mock_renviron_path <- function(scope = c("project", "user"), .file = ".Renviron", verbosity = 1) {
+  mock_renviron_path <- function(scope = c("user", "project"), .file = ".Renviron", verbosity = 1) {
     return(path)
   }
   assignInNamespace("renviron_path", mock_renviron_path, ns = "renviron")
@@ -30,7 +30,7 @@ test_that("renviron_load loads all variables correctly", {
 # Test: Handling of non-existent .Renviron file
 test_that("renviron_load returns NULL for non-existent files", {
   # Mock renviron_path to return non-existent path
-  mock_renviron_path <- function(scope = c("project", "user"), .file = ".Renviron", verbosity = 1) {
+  mock_renviron_path <- function(scope = c("user", "project"), .file = ".Renviron", verbosity = 1) {
     return("/non/existent/path")
   }
   assignInNamespace("renviron_path", mock_renviron_path, ns = "renviron")

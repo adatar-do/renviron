@@ -8,7 +8,7 @@
 #'
 #' @param scope A character string or vector specifying the scope to search for the environment file.
 #'        Valid values are "user" and "project". If both are provided, the function will search
-#'        in the order provided. The default order is c("project", "user").
+#'        in the order provided. The default order is c("user", "project").
 #'        The "user" scope refers to the user's home directory, while the "project" scope
 #'        refers to the current project directory.
 #' @param .file The name of the environment file to search for within the specified scope(s).
@@ -39,7 +39,7 @@
 #' }
 #'
 #' @export
-renviron_path <- function(scope = c("project", "user"), .file = '.Renviron', verbosity = 1, ...) {
+renviron_path <- function(scope = c("user", "project"), .file = '.Renviron', verbosity = 1, ...) {
   if (verbosity == 0) {
     suppressMessages(scoped_path_r(scope, .file, envvar = "R_ENVIRON_USER"))
   } else {

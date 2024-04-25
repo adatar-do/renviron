@@ -13,7 +13,7 @@
 #'        - `scope`: A character vector specifying the scope(s) to search for the .Renviron file.
 #'          Valid options are "user" and "project", with "project" typically having precedence unless
 #'          otherwise specified. This determines which .Renviron file the variables are loaded from
-#'          if `.renviron` is not provided. The default is `c("project", "user")`.
+#'          if `.renviron` is not provided. The default is `c("user", "project")`.
 #'        - `.file`: Specifies the filename to be considered as the environment file within the
 #'          specified scope. Default is ".Renviron".
 #'

@@ -18,7 +18,7 @@ test_that("Correctly identifies non-existent variables", {
 test_that("Correctly integrates with renviron_load using scope", {
   # Mocking renviron_load to simulate loading variables
   with_mocked_bindings(
-    `renviron_load` = function(scope = c("project", "user"), ...) {
+    `renviron_load` = function(scope = c("user", "project"), ...) {
       if ("user" %in% scope) {
         return(list(USER_VAR = "exists"))
       } else {

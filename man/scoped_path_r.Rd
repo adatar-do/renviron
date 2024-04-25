@@ -4,7 +4,7 @@
 \alias{scoped_path_r}
 \title{Determine Scoped Path for R Environments}
 \usage{
-scoped_path_r(scope = c("project", "user"), ..., envvar = NULL)
+scoped_path_r(scope = c("user", "project"), ..., envvar = NULL)
 }
 \arguments{
 \item{scope}{A character string specifying the scope of the path.

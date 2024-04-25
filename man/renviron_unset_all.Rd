@@ -10,7 +10,7 @@ renviron_unset_all(...)
 \item{...}{Additional arguments to \code{renviron_load()}:
 - \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
 Valid values are "user" and "project". The function searches in the order provided.
-The default order is \code{c("project", "user")}.
+The default order is \code{c("user", "project")}.
 - \code{.file}: Optionally specify a different filename to use within the specified scope.
 Defaults to ".Renviron".}
 }

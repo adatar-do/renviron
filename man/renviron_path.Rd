@@ -5,7 +5,7 @@
 \title{Retrieve the path to the .Renviron file}
 \usage{
 renviron_path(
-  scope = c("project", "user"),
+  scope = c("user", "project"),
   .file = ".Renviron",
   verbosity = 1,
   ...
@@ -14,7 +14,7 @@ renviron_path(
 \arguments{
 \item{scope}{A character string or vector specifying the scope to search for the environment file.
 Valid values are "user" and "project". If both are provided, the function will search
-in the order provided. The default order is c("project", "user").
+in the order provided. The default order is c("user", "project").
 The "user" scope refers to the user's home directory, while the "project" scope
 refers to the current project directory.}
 

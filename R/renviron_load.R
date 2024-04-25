@@ -8,7 +8,7 @@
 #'
 #' @param scope A character vector specifying the scope(s) to search for the .Renviron file.
 #'        Valid values are "user" and "project". The function searches in the order provided.
-#'        The default order is `c("project", "user")`. The "user" scope refers to the user's home
+#'        The default order is `c("user", "project")`. The "user" scope refers to the user's home
 #'        directory, while the "project" scope refers to the current project directory.
 #' @param .file Optional filename to search within the specified scope.
 #' @param .vars Optional character vector specifying which variables to load; if NULL, all variables are loaded.
@@ -33,7 +33,7 @@
 #' }
 #'
 #' @export
-renviron_load <- function(scope = c("project", "user"), .file = ".Renviron", .vars = NULL, verbosity = 1, ...) {
+renviron_load <- function(scope = c("user", "project"), .file = ".Renviron", .vars = NULL, verbosity = 1, ...) {
   file_path <- renviron_path(scope, .file, verbosity, ...)
   if (!file.exists(file_path)) {
     if (verbosity > 0) {

@@ -21,7 +21,7 @@ permanently affecting the environment file.}
 
 \item{...}{Additional arguments:
 - \code{scope}: Specifies the scope(s) to search for the environment file when loading variables.
-Valid values are "user" and "project", searched in the provided order. Default is \code{c("project", "user")}.
+Valid values are "user" and "project", searched in the provided order. Default is \code{c("user", "project")}.
 - \code{.file}: Specifies the filename to be considered as the environment file within the scope. Default is ".Renviron".
 - \code{confirm}: Indicates whether to confirm changes before saving the environment file. Default is \code{TRUE}.}
 }

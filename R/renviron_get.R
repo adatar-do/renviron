@@ -13,7 +13,7 @@
 #' @param ... Additional arguments that are passed to the `renviron_load()` function:
 #'        - `scope`: A character vector specifying the scope(s) to search for the .Renviron file.
 #'          Valid values are "user" and "project", with "project" typically having precedence unless
-#'          otherwise specified. This is used only when `.renviron` is `NULL`. The default is `c("project", "user")`.
+#'          otherwise specified. This is used only when `.renviron` is `NULL`. The default is `c("user", "project")`.
 #'        - `.file`: Specifies the filename to be considered as the environment file within the specified scope.
 #'          Default is ".Renviron".
 #'

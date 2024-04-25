@@ -5,7 +5,7 @@
 \title{Load Environment Variables from the .Renviron File}
 \usage{
 renviron_load(
-  scope = c("project", "user"),
+  scope = c("user", "project"),
   .file = ".Renviron",
   .vars = NULL,
   verbosity = 1,
@@ -15,7 +15,7 @@ renviron_load(
 \arguments{
 \item{scope}{A character vector specifying the scope(s) to search for the .Renviron file.
 Valid values are "user" and "project". The function searches in the order provided.
-The default order is \code{c("project", "user")}. The "user" scope refers to the user's home
+The default order is \code{c("user", "project")}. The "user" scope refers to the user's home
 directory, while the "project" scope refers to the current project directory.}
 
 \item{.file}{Optional filename to search within the specified scope.}
