@@ -2,57 +2,46 @@
 % Please edit documentation in R/path.R
 \name{renviron_path}
 \alias{renviron_path}
-\title{Retrieve the path to the .Renviron file}
+\title{Resolver el archivo de configuración}
 \usage{
 renviron_path(
   scope = c("user", "project"),
   .file = ".Renviron",
   verbosity = 1,
-  ...
+  ...,
+  project = getwd(),
+  user = path.expand("~")
 )
 }
 \arguments{
-\item{scope}{A character string or vector specifying the scope to search for the environment file.
-Valid values are "user" and "project". If both are provided, the function will search
-in the order provided. The default order is c("user", "project").
-The "user" scope refers to the user's home directory, while the "project" scope
-refers to the current project directory.}
+\item{scope}{Ámbitos que se consultan en orden: \code{"user"} y \code{"project"}.
+Se usa el primer archivo existente; si ninguno existe, la primera ruta.}
 
-\item{.file}{The name of the environment file to search for within the specified scope(s).
-The default is '.Renviron'. This allows the function to be used to find other environment
-files as needed.}
+\item{.file}{Nombre relativo al ámbito o ruta absoluta explícita.}
 
-\item{verbosity}{An integer specifying the level of verbosity. The default is 1, which prints
-a message when the file is found. A value of 0 suppresses all messages.}
+\item{verbosity}{\code{0} suprime el aviso de archivo ausente; \code{1} lo muestra.}
 
-\item{...}{Additional parameters passed to the internal path finding function.}
+\item{...}{Argumentos de \code{\link[=renviron_path]{renviron_path()}}, como \code{project} y \code{user}.}
+
+\item{project}{Directorio para el ámbito de proyecto; por defecto \code{getwd()}.}
+
+\item{user}{Directorio para el ámbito de usuario; por defecto el hogar de R.}
 }
 \value{
-A character string representing the path to the specified environment file within the
-chosen scope. If the file exists in the 'project' scope and "project" is included in the
-scope parameter, that path will be returned; otherwise, it will return the path to the
-user-level file. If no file is found, the function will return NULL.
+Ruta absoluta. Si no existe un archivo, devuelve la primera ruta
+candidata, utilizable para crear un archivo con \code{\link[=renviron_save]{renviron_save()}}.
 }
 \description{
-This function determines the path to a specified environment file (by default, .Renviron) by
-considering both user and project scopes, utilizing an internal approach inspired by \code{usethis:::scoped_path_r}.
-It prioritizes the project-specific file if present; otherwise, it falls back to the user-level file.
-The function allows specifying the desired scope to directly target either the user-level or
-project-level file. Additionally, a specific filename can be specified, allowing for flexible file management.
+Consulta los ámbitos en el orden indicado, sin fusionar archivos ni cambiar
+el proyecto activo. \code{project} es el directorio de trabajo por defecto.
+}
+\details{
+Una ruta absoluta en \code{.file} tiene prioridad sobre los ámbitos.
+\code{R_ENVIRON_USER} se respeta solo para el archivo predeterminado del ámbito
+\code{user} cuando no se especifica \code{user}. Un nombre personalizado no se redirige.
+El orden predeterminado sigue siendo usuario, proyecto; use
+\code{scope = c("project", "user")} para dar prioridad al proyecto.
 }
 \examples{
-\dontrun{
-# To get the path to the user-level .Renviron file:
-user_env_path <- renviron_path("user")
-print(user_env_path)
-
-# To get the path to the project-level .Renviron file, if it exists:
-project_env_path <- renviron_path("project")
-print(project_env_path)
-
-# To search for a different file first in the user scope, then in the project scope:
-custom_file_path <- renviron_path(c("user", "project"), .file = ".myenv")
-print(custom_file_path)
-}
-
+renviron_path("project", project = tempdir())
 }

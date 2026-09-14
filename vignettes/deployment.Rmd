@@ -1,0 +1,31 @@
+---
+title: "Instalación y publicación"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Instalación y publicación}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+La entrega contiene `renviron_0.6.0.tar.gz`, el binario Windows `renviron_0.6.0.zip`, las fuentes, el sitio bilingüe generado, informes de validación y un manifiesto SHA-256. El binario se verifica en Windows con R 4.5.1. Para otras plataformas use el paquete fuente y ejecute las comprobaciones correspondientes; la matriz de CI queda configurada, pero una validación local no demuestra resultados remotos.
+
+## Instalar
+
+Desde la carpeta extraída ejecute `Rscript install.R ruta/a/biblioteca` en Windows, o añada `source` como segundo argumento para instalar la fuente. El instalador verifica el archivo y las dependencias obligatorias antes de crear la biblioteca. Usa exclusivamente el paquete local. Las dependencias externas se enumeran en `external-dependencies.txt`; deben estar disponibles de antemano. Añada la biblioteca a `.libPaths()` antes de `library(renviron)` y reinicie R si actualiza una versión ya cargada.
+
+También puede usar `install.packages("packages/renviron_0.6.0.tar.gz", repos=NULL, type="source", lib="ruta/a/biblioteca")`. La entrega local no implica que 0.6.0 ya esté disponible en CRAN, GitHub o r-universe.
+
+## Reconstruir y publicar la documentación
+
+El repositorio mantiene README, ayuda de todas las funciones, cuatro guías ejecutables, cambios y traducciones completas. Español se sirve en la raíz e inglés en `en/`. Ambas ediciones tienen búsqueda local y enlaces recíprocos en cada página.
+
+En el workspace ENDOM: ejecute `Rscript renviron/scripts/check-release.R`, `Rscript renviron/scripts/build-docs.R` y `python renviron/scripts/check-sites.py artifacts/renviron-release/sites/r --kind r`. La construcción usa roxygen2, pkgdown, knitr, rmarkdown, desc y jsonlite; la auditoría Python requiere beautifulsoup4. El script `scripts/release.ps1` ejecuta la secuencia completa de validación, documentación e instaladores usando las herramientas indicadas.
+
+Para publicar, sirva el contenido de `site/` como archivos estáticos, manteniendo `en/`, `search.json`, JavaScript y estilos. Si cambia la URL canónica, actualice DESCRIPTION, ambos `_pkgdown.yml`, `scripts/build-docs.R` y la constante `canonical` de `scripts/check-sites.py` antes de reconstruir. El workflow manual de documentación genera un artefacto; no publica automáticamente.
+
+La entrega y sus sumas permiten revisar el resultado antes del despliegue. No incluye archivos `.Renviron` ni `.env` locales, ni realiza una instalación global o publicación remota.
+
+```{r}
+stopifnot(packageVersion("renviron") >= "0.6.0")
+renviron::renviron_list(list(RNV_INSTALL_CHECK = "invented"))
+```

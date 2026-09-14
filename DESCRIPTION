@@ -1,22 +1,29 @@
 Package: renviron
-Title: Environment Variable Management for R Projects
-Version: 0.5.1
-Authors@R: 
+Title: Environment File Management for R Projects
+Version: 0.6.0
+Authors@R:
     c(person("Daniel E.", "de la Rosa", , "me@dnldelarosa.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-5965-5277")),
-    person(given = "Adatar",
-           role = "cph"))
-Description: The `renviron` package is an essential toolkit for managing environment variables in R projects, offering advanced capabilities for modifying, creating, and deleting variables within `.Renviron` and other custom configuration files. This package supports dynamic handling of environment variables directly from R, making it invaluable for projects that demand precise configuration management. Key features include the ability to specify custom file names for environment settings, selectively load variables, and ensure secure handling of sensitive data like API keys and database credentials. Whether updating single variables, managing global settings across multiple projects, or securely masking variable values for confidentiality, `renviron` provides robust functionality wrapped in an easy-to-use interface. This makes it an ideal solution for developers and data scientists seeking efficient and secure environment variable management.
+             comment = c(ORCID = "0000-0002-5965-5277")),
+      person(given = "Adatar", role = "cph"))
+Description: Read environment files without modifying the current session,
+    load selected variables, and edit individual assignments while preserving
+    unrelated lines. Uses the native R environment reader in an isolated
+    process and writes literal values with validation and file replacement.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
-Imports: 
-    cli,
+URL: https://adatar-do.github.io/renviron/, https://github.com/adatar-do/renviron
+BugReports: https://github.com/adatar-do/renviron/issues
+Depends: R (>= 4.1.0)
+Imports:
+    callr (>= 3.7.0),
     fs,
-    magrittr,
-    readr,
-    usethis
-Suggests: 
-    testthat (>= 3.0.0)
+    magrittr
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.2.0),
+    withr
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3

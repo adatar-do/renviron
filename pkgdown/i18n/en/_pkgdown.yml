@@ -1,0 +1,19 @@
+url: https://adatar-do.github.io/renviron/en/
+lang: en
+home:
+  sidebar: false
+template:
+  bootstrap: 5
+  bootswatch: flatly
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    intro:
+      text: Home
+      href: index.html
+articles:
+  - title: Guides
+    navbar: ~
+    contents: [renviron, archivos, migracion, deployment]

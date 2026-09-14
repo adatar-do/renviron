@@ -2,47 +2,39 @@
 % Please edit documentation in R/renviron_save.R
 \name{renviron_save}
 \alias{renviron_save}
-\title{Save environment variables to the environment file}
+\title{Guardar un conjunto completo de variables}
 \usage{
 renviron_save(.Renviron, confirm = TRUE, ...)
 }
 \arguments{
-\item{.Renviron}{A named list where each name is an environment variable key and each value is
-the corresponding value for that key. The function expects the list values to be character strings.
-Example: \code{list(CENSUS_API_KEY = "12345", GITHUB_PAT = "abcde")}.}
+\item{.Renviron}{Lista nombrada o vector de caracteres nombrado, con valores
+escalares sin NA ni saltos de línea. \code{list()} crea un archivo vacío.}
 
-\item{confirm}{Logical; if TRUE, the function prompts for user confirmation before overwriting
-the .Renviron file. This helps to prevent unintended overwrites. Default is TRUE.
-Set this to FALSE for automated scripts or non-interactive session where confirmation is not desired.}
+\item{confirm}{Solicitar confirmación interactiva. Para scripts use \code{FALSE}.}
 
-\item{...}{Additional arguments to configure the operation:
-- \code{scope}: A character vector specifying the scope(s) where the .Renviron file is located.
-Valid options are "user" for the user-level file or "project" for the project-level file.
-Default is "project". The function saves to the .Renviron file in the specified scope.
-- \code{.file}: Optionally specify a different filename to save the environment variables to.
-Default is ".Renviron".}
+\item{...}{Argumentos de \code{\link[=renviron_path]{renviron_path()}}.}
 }
 \value{
-This function does not return a value and operates invisibly, with the primary side effect
-being the modification of the .Renviron file.
+Ruta guardada, invisiblemente; \code{NULL} si se cancela. No cambia la sesión.
 }
 \description{
-This function takes a named list of environment variables and saves them to the appropriate
-.Renviron file based on the specified scope. The function prompts for user confirmation before
-overwriting the file if \code{confirm} is set to TRUE, helping to prevent accidental data loss.
-This feature is particularly useful for programmatically updating or setting environment variables
-that need to persist across R sessions.
+Reemplaza el contenido del archivo con valores literales compatibles con R.
+Valida todos los datos antes de escribir. La sustitución usa un archivo
+temporal en el mismo directorio y conserva los permisos de un archivo existente.
+}
+\details{
+Esta función reemplaza todo el documento, incluidos comentarios.
+Para editar una sola clave conservando otras líneas use \code{\link[=renviron_add]{renviron_add()}} o
+\code{\link[=renviron_delete]{renviron_delete()}} con \code{in_place = TRUE} y sin proporcionar \code{.renviron}.
+Los valores \verb{$\{...\}} se guardan como texto literal. No se admiten enlaces
+simbólicos como destino, valores multilínea ni líneas codificadas de más
+de 99900 bytes. El directorio debe existir. Los nuevos archivos usan modo
+0600 donde el sistema lo soporta; en Windows rigen también las ACL del directorio.
 }
 \examples{
-\dontrun{
-# Assume you want to set or update environment variables
-new_env <- list(CENSUS_API_KEY = "12345", GITHUB_PAT = "abcde")
-
-# Save these variables to the .Renviron file, with confirmation
-renviron_save(new_env, confirm = TRUE)
-
-# Automatically save variables without confirmation for automated scripts
-renviron_save(new_env, confirm = FALSE)
-}
-
+path <- tempfile()
+renviron_save(list(RNV_SAVE_DEMO = "one=two", RNV_EMPTY = ""),
+              .file = path, confirm = FALSE)
+renviron_list(.file = path)
+unlink(path)
 }

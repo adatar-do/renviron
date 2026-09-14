@@ -1,0 +1,43 @@
+---
+title: "Migrate from 0.5.1"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Migrate from 0.5.1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Version 0.6.0 retains the existing public functions and `%>%` operator and adds `renviron_read()`. It changes behaviors that were ambiguous or had side effects. Review these points when updating.
+
+| Topic | 0.5.1 | 0.6.0 |
+|---|---|---|
+| get/exists/list queries | Could load every file variable into the session | Read only; use `renviron_load()` to load |
+| Missing get key | Could return an unrelated Sys.getenv value | Returns `NULL` |
+| Empty value | Could be confused with a missing key | The list retains `""`; exists returns TRUE |
+| Empty/missing file | `NULL` on several paths | `list()`; list returns `character()` |
+| Multiple scopes | Chose only the first through match.arg | Searches for the first existing file in supplied order |
+| Project | Depended on the active usethis project | Working directory or explicit `project` |
+| Persistent edit | Rewrote all loaded variables | Without a supplied list, preserves other lines |
+| Cancelled confirmation | The session could already have changed | Does not apply the session edit |
+| Values containing `=` or quotes | Could be truncated or written incorrectly | Native reading and verified serialization |
+| Invalid syntax | Could be silently ignored | Error before loading or editing |
+| `renviron_save()` | Result from write_lines | Invisible saved path or NULL on cancellation |
+
+`in_place` remains **FALSE** for both add and delete. Previous delete documentation said TRUE although the implementation used FALSE. Both functions still update the selected session key; `in_place=TRUE` adds persistence. `confirm=TRUE` requires interactive R; scripts must pass `confirm=FALSE`. The session is not changed until the write succeeds.
+
+A list returned by reading contains resolved values. Saving it with `renviron_save()` replaces the document and encodes those values literally. To retain comments and references, edit by key without supplying `.renviron`. An edit does not automatically recalculate dependent variables already loaded into the session; load the required keys afterwards.
+
+The list returned by add/delete retains values read before editing, except for the edited key. Call `renviron_read()` again to obtain every derived value from the updated file.
+
+```{r}
+local({
+  withr::local_envvar(c(RNV_MIGRATE = "session"))
+  path <- tempfile()
+  on.exit(unlink(path))
+  writeLines("RNV_MIGRATE='file'", path)
+  value <- renviron::renviron_get("RNV_MIGRATE", .file = path)
+  stopifnot(value == "file", Sys.getenv("RNV_MIGRATE") == "session")
+  renviron::renviron_load(.file = path)
+  stopifnot(Sys.getenv("RNV_MIGRATE") == "file")
+})
+```

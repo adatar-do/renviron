@@ -1,0 +1,43 @@
+---
+title: "Migrar desde 0.5.1"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Migrar desde 0.5.1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+La versión 0.6.0 conserva las funciones públicas previas y el operador `%>%`, e incorpora `renviron_read()`. Cambia comportamientos que antes eran ambiguos o producían efectos laterales. Revise estos puntos al actualizar.
+
+| Tema | 0.5.1 | 0.6.0 |
+|---|---|---|
+| Consultas get/exists/list | Podían cargar todas las variables en la sesión | Solo consultan; use `renviron_load()` para cargar |
+| Clave ausente en get | Podía devolver un valor ajeno de Sys.getenv | Devuelve `NULL` |
+| Valor vacío | Podía confundirse con una clave ausente | La lista conserva `""`; exists devuelve TRUE |
+| Archivo vacío/ausente | `NULL` en varias rutas | `list()`; list devuelve `character()` |
+| Ámbitos múltiples | Solo elegía el primero mediante match.arg | Busca el primer archivo existente en el orden indicado |
+| Proyecto | Dependía del proyecto activo de usethis | Directorio de trabajo o `project` explícito |
+| Edición persistente | Reescribía todas las variables cargadas | Sin lista suministrada, conserva las otras líneas |
+| Confirmación cancelada | La sesión podía haber cambiado | No aplica la edición a la sesión |
+| Valores con `=` y comillas | Podían truncarse o guardarse mal | Lectura nativa y serialización verificada |
+| Sintaxis inválida | Podía ignorarse silenciosamente | Error antes de cargar o editar |
+| `renviron_save()` | Resultado de write_lines | Ruta guardada invisible o NULL al cancelar |
+
+`in_place` sigue siendo **FALSE** tanto en add como en delete. La documentación antigua de delete decía TRUE aunque el código usaba FALSE. Ambas funciones siguen modificando la clave seleccionada de la sesión; `in_place=TRUE` añade persistencia. `confirm=TRUE` requiere una sesión interactiva; en scripts debe indicar `confirm=FALSE`. El paquete no cambia la sesión antes de que el guardado termine.
+
+Una lista obtenida mediante lectura contiene valores resueltos. Guardarla con `renviron_save()` reemplaza el documento y convierte esos valores en literales. Para conservar comentarios y referencias, edite por clave sin suministrar `.renviron`. La edición tampoco recalcula automáticamente las variables dependientes ya cargadas; cargue las claves necesarias después.
+
+La lista de retorno de add/delete conserva los valores leídos antes de editar, salvo la clave modificada. Para obtener nuevamente todos los valores derivados del archivo actualizado, llame a `renviron_read()`.
+
+```{r}
+local({
+  withr::local_envvar(c(RNV_MIGRATE = "session"))
+  path <- tempfile()
+  on.exit(unlink(path))
+  writeLines("RNV_MIGRATE='file'", path)
+  value <- renviron::renviron_get("RNV_MIGRATE", .file = path)
+  stopifnot(value == "file", Sys.getenv("RNV_MIGRATE") == "session")
+  renviron::renviron_load(.file = path)
+  stopifnot(Sys.getenv("RNV_MIGRATE") == "file")
+})
+```

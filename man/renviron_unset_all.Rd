@@ -2,31 +2,23 @@
 % Please edit documentation in R/renviron_unset_all.R
 \name{renviron_unset_all}
 \alias{renviron_unset_all}
-\title{Unset all environment variables from the environment file}
+\title{Retirar de la sesión las claves seleccionadas del archivo}
 \usage{
 renviron_unset_all(...)
 }
 \arguments{
-\item{...}{Additional arguments to \code{renviron_load()}:
-- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
-Valid values are "user" and "project". The function searches in the order provided.
-The default order is \code{c("user", "project")}.
-- \code{.file}: Optionally specify a different filename to use within the specified scope.
-Defaults to ".Renviron".}
+\item{...}{Argumentos de \code{\link[=renviron_read]{renviron_read()}}, incluyendo \code{.vars} para filtrar.}
 }
 \value{
-Invisibly returns NULL after unsetting the variables.
+\code{NULL}, invisiblemente.
 }
 \description{
-This function unsets all environment variables that are loaded from the specified
-.Renviron file within the given scope. It is particularly useful for cleaning up
-the environment in R sessions during testing or after loading configurations that
-are no longer needed.
+Lee sin cargar variables y elimina de la sesión solo las claves resultantes.
+No modifica el archivo ni otras variables del sistema.
 }
 \examples{
-\dontrun{
-renviron_unset_all(scope = "project")
-renviron_unset_all(scope = "user", .file = "custom.env")
-}
-
+path <- tempfile()
+writeLines(character(), path)
+renviron_unset_all(.file = path)
+unlink(path)
 }

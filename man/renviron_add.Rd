@@ -2,50 +2,48 @@
 % Please edit documentation in R/renviron_add.R
 \name{renviron_add}
 \alias{renviron_add}
-\title{Add or update an environment variable in the environment file}
+\title{Agregar o actualizar una variable}
 \usage{
-renviron_add(key, value, .renviron = NULL, in_place = FALSE, ...)
+renviron_add(
+  key,
+  value,
+  .renviron = NULL,
+  in_place = FALSE,
+  ...,
+  confirm = TRUE
+)
 }
 \arguments{
-\item{key}{A character string specifying the name of the environment variable to add or update.}
+\item{key}{Nombre de una variable.}
 
-\item{value}{The new value for the environment variable, provided as a character string.}
+\item{value}{Un valor de caracteres, sin NA ni saltos de línea.}
 
-\item{.renviron}{An optional named list of environment variables to modify instead of loading
-the environment file using \code{renviron_load()}. This can be useful for testing or batch processing.}
+\item{.renviron}{Lista o vector nombrado; \code{NULL} usa el archivo.}
 
-\item{in_place}{A logical flag indicating whether to save the changes back to the environment
-file (\code{TRUE}) or to return the modified list without saving (\code{FALSE}). Default is \code{FALSE}.
-When \code{FALSE}, the function allows for controlled manipulation of variables without
-permanently affecting the environment file.}
+\item{in_place}{Guardar también el archivo; el valor predeterminado es \code{FALSE}.}
 
-\item{...}{Additional arguments:
-- \code{scope}: Specifies the scope(s) to search for the environment file when loading variables.
-Valid values are "user" and "project", searched in the provided order. Default is \code{c("user", "project")}.
-- \code{.file}: Specifies the filename to be considered as the environment file within the scope. Default is ".Renviron".
-- \code{confirm}: Indicates whether to confirm changes before saving the environment file. Default is \code{TRUE}.}
+\item{...}{Argumentos de \code{\link[=renviron_path]{renviron_path()}}.}
+
+\item{confirm}{Confirmación interactiva del guardado; para scripts use \code{FALSE}.}
 }
 \value{
-If \code{in_place} is \code{TRUE}, the function invisibly returns the modified list of environment variables
-after saving it to the environment file. If \code{in_place} is \code{FALSE}, it returns the modified list without saving,
-allowing further manipulation or inspection. The current R session's environment reflects the updated values.
+Lista modificada, invisiblemente; la lista original si se cancela.
 }
 \description{
-This function adds a new environment variable or updates the value of an existing variable
-within the specified environment file (.Renviron by default), considering both user and project scopes.
-It offers the flexibility to either save the changes back to the environment file
-or to manipulate the variables in a more controlled manner by not saving (\code{in_place = FALSE}).
-Changes are immediately updated in the current R session's environment, regardless of the \code{in_place} setting.
+Actualiza la clave seleccionada en la sesión. Si se guarda, primero escribe
+el archivo; una cancelación o fallo de escritura deja la sesión intacta.
+}
+\details{
+Sin \code{.renviron}, el guardado modifica solo las líneas de la clave;
+conserva comentarios, líneas vacías y expresiones de las demás variables.
+Elimina duplicados de la clave editada. Los finales de línea se normalizan
+a LF y se escribe UTF-8. Si proporciona \code{.renviron}, el guardado reemplaza
+todo el archivo con esa lista modificada. No recalcula otras variables
+de la sesión que dependan de la clave; use \code{\link[=renviron_load]{renviron_load()}} para ello.
 }
 \examples{
-\dontrun{
-# Add or update the CENSUS_API_KEY variable in the environment file and save it
-renviron_add("CENSUS_API_KEY", "new_key_value", in_place = TRUE)
-
-# Add or update the variable in a provided list without saving
-env_list <- renviron_load()  # Load current environment variables
-modified_env <- renviron_add("NEW_VAR", "some_value", .renviron = env_list, in_place = FALSE)
-print(modified_env$NEW_VAR)  # Output the value of NEW_VAR
-}
-
+previous <- Sys.getenv("RNV_ADD_DEMO", unset = NA_character_)
+values <- renviron_add("RNV_ADD_DEMO", "sample", .renviron = list())
+if (is.na(previous)) Sys.unsetenv("RNV_ADD_DEMO") else
+  Sys.setenv(RNV_ADD_DEMO = previous)
 }

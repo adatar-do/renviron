@@ -1,0 +1,36 @@
+name: Build bilingual documentation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: renviron
+      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-r@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install build dependencies
+        run: |
+          Rscript -e 'install.packages(c("callr", "fs", "magrittr", "testthat", "withr", "pkgdown", "roxygen2", "knitr", "rmarkdown", "desc", "jsonlite", "pkgload"), repos="https://cloud.r-project.org")'
+          python -m pip install beautifulsoup4
+      - name: Generate and build both editions
+        run: |
+          mkdir -p artifacts/renviron-release
+          python renviron/scripts/author-docs.py
+          Rscript --vanilla -e 'roxygen2::roxygenise("renviron")'
+          Rscript --vanilla renviron/scripts/test-local.R
+          Rscript --vanilla renviron/scripts/export-reference.R
+          python renviron/scripts/build-reference.py
+          Rscript --vanilla renviron/scripts/build-docs.R
+          python renviron/scripts/check-sites.py artifacts/renviron-release/sites/r --kind r
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renviron-bilingual-site
+          path: artifacts/renviron-release/sites/r
+          include-hidden-files: true

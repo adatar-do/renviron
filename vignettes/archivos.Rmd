@@ -1,0 +1,46 @@
+---
+title: "Ámbitos y sintaxis de archivos"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Ámbitos y sintaxis de archivos}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Selección de ruta
+
+`renviron_path()` consulta `scope` en el orden proporcionado y devuelve el primer archivo existente. No fusiona archivos. Si no existe ninguno, devuelve la primera ruta candidata para permitir su creación. El orden predeterminado es `c("user", "project")`; para priorizar el proyecto use `c("project", "user")`.
+
+`project=getwd()` usa el directorio de trabajo actual, sin detectar raíces ni activar proyectos de usethis. Puede pasar `project` y `user` explícitamente. Una `.file` absoluta siempre selecciona ese archivo. Para el nombre predeterminado `.Renviron` en el ámbito de usuario, `R_ENVIRON_USER` tiene prioridad salvo que se proporcione `user`. Los nombres personalizados nunca se redirigen por esa variable. `scoped_path_r()` se conserva para construir rutas de un único ámbito.
+
+## Interpretación nativa
+
+La lectura usa `readRenviron()` en otro proceso de R, iniciado con `--vanilla`. No ejecuta perfiles de inicio ni modifica el entorno del proceso principal. Hereda el entorno actual para resolver referencias y procesa las asignaciones en orden. Las referencias pueden utilizar claves que no estén en `.vars`: el filtro se aplica al resultado.
+
+Se admiten valores con `=`, comillas simples o dobles, barras, Unicode UTF-8, comentarios de línea y referencias `${VAR}`, `${VAR-default}` y `${VAR:-default}`. También se acepta `export KEY=value` como extensión; R por sí solo no necesita ese prefijo. Una línea `KEY=` sin valor se ignora, mientras `KEY=''` declara una cadena vacía. Un `#` al final de una asignación forma parte del valor. Las claves repetidas siguen la última asignación efectiva de R.
+
+En Windows una cadena vacía puede representarse como variable ausente en el entorno del proceso. La lista devuelta conserva la clave y `""`. Una expansión sin comillas que produzca vacío puede ser ignorada por R y mantener un valor heredado; use comillas para expresar intención. Los valores devueltos no son una copia textual de expresiones del archivo.
+
+Consulte la [documentación de inicio de R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Startup.html) para las reglas del lector nativo. El paquete no ejecuta comandos de shell ni interpreta scripts.
+
+## Guardado y límites
+
+Los valores suministrados a `renviron_save()` y `renviron_add()` son **literales**: `${VARIABLE}` se guarda para recuperar ese mismo texto. Las ediciones de una clave mantienen las expresiones ajenas sin resolverlas ni volverlas literales. Si pasa una lista a un editor con `in_place=TRUE`, esa lista modificada reemplaza todo el documento.
+
+Se requieren nombres portables `[A-Za-z_][A-Za-z0-9_]*` y valores escalares de caracteres sin NA ni saltos de línea. Se rechazan bytes NUL, UTF-8 inválido y líneas codificadas de más de 99900 bytes. Los archivos ausentes o vacíos devuelven `list()`; una asignación inválida detiene toda la operación con el número de línea, sin incluir su valor.
+
+El guardado prepara un temporal en el mismo directorio y reemplaza el destino; comprueba cambios desde la lectura y conserva permisos de archivos existentes. No proporciona bloqueo entre escritores concurrentes: coordine un solo escritor por archivo. No escribe a través de enlaces simbólicos. El directorio debe existir; los nuevos archivos usan modo 0600 donde se soporta y las ACL heredadas siguen aplicándose en Windows. Las ediciones normalizan finales de línea a LF y UTF-8.
+
+Cada lectura inicia un proceso de R: para consultar muchas claves, lea una vez y reutilice la lista. La llamada necesita una instalación de R ejecutable y tiene un límite de 60 segundos.
+
+```{r}
+local({
+  path <- tempfile()
+  on.exit(unlink(path))
+  values <- list(RNV_EQUALS = "a=b==", RNV_LITERAL = "${RNV_EXAMPLE}",
+                 RNV_PATH = "C:\\folder\\", RNV_EMPTY = "")
+  renviron::renviron_save(values, .file = path, confirm = FALSE)
+  stopifnot(identical(renviron::renviron_read(.file = path), values))
+  print(renviron::renviron_list(values))
+})
+```

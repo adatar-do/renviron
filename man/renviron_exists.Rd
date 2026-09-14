@@ -2,45 +2,23 @@
 % Please edit documentation in R/renviron_exists.R
 \name{renviron_exists}
 \alias{renviron_exists}
-\title{Check if an environment variable exists}
+\title{Comprobar si una variable está definida}
 \usage{
 renviron_exists(key, .renviron = NULL, ...)
 }
 \arguments{
-\item{key}{A character string specifying the name of the environment variable to check.}
+\item{key}{Nombre de una variable.}
 
-\item{.renviron}{An optional named list of environment variables to check against.
-If not provided, the function will load the variables from the .Renviron file using \code{renviron_load()},
-considering the specified scope.}
+\item{.renviron}{Lista o vector nombrado; \code{NULL} lee el archivo.}
 
-\item{...}{Additional arguments to \code{renviron_load()} when \code{.renviron} is not provided:
-- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
-Valid options are "user" and "project". The function searches in the order provided,
-defaulting to \code{c("user", "project")} if not specified. This allows for flexibility in determining
-where the environment variables are loaded from based on operational needs.
-- \code{.file}: Specifies the filename to consider as the environment file within the scope.
-This can be used to specify a different environment file if needed.}
+\item{...}{Argumentos de \code{\link[=renviron_read]{renviron_read()}}.}
 }
 \value{
-TRUE if the environment variable exists in the specified scope or list, FALSE otherwise.
-This boolean value can be used to make decisions in scripts or applications based on the
-availability of required configuration.
+\code{TRUE} o \code{FALSE}.
 }
 \description{
-This function checks for the existence of a specified environment variable either in the .Renviron file
-or within a provided named list of environment variables. It is useful for validating configuration
-before attempting to use environment variables in your application.
+Comprueba la presencia de la clave, incluso cuando su valor es vacío. No modifica la sesión.
 }
 \examples{
-\dontrun{
-# Check if the CENSUS_API_KEY variable exists in the .Renviron file within the default scope
-exists <- renviron_exists("CENSUS_API_KEY")
-print(exists)  # Prints TRUE if the variable exists, FALSE otherwise
-
-# Check for the variable in a provided list
-env_list <- list(CENSUS_API_KEY='12345', GITHUB_PAT='abcde')
-exists_in_list <- renviron_exists("CENSUS_API_KEY", .renviron = env_list)
-print(exists_in_list)  # Expected output: TRUE
-}
-
+renviron_exists("RNV_EXAMPLE", .renviron = list(RNV_EXAMPLE = ""))
 }

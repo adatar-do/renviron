@@ -1,0 +1,18 @@
+# Run from the ENDOM workspace. Builds the source tarball and runs R CMD check.
+Sys.setenv(RENV_CONFIG_AUTOLOADER_ENABLED = "false", NOT_CRAN = "true")
+if (.Platform$OS.type == "windows") Sys.setenv(LC_ALL = "English_United States.utf8")
+source("renviron/scripts/bootstrap.R")
+roxygen2::roxygenise("renviron")
+release <- Sys.getenv("RENVIRON_RELEASE_DIR", "artifacts/renviron-release")
+dir.create(file.path(release, "package"), recursive = TRUE, showWarnings = FALSE)
+pkg <- normalizePath("renviron", winslash = "/")
+version <- read.dcf(file.path(pkg, "DESCRIPTION"))[1, "Version"]
+output <- normalizePath(file.path(release, "package"), winslash = "/")
+setwd(output)
+r <- file.path(R.home("bin"), if (.Platform$OS.type == "windows") "R.exe" else "R")
+run <- function(args) if (system2(r, args) != 0L) stop("R package command failed")
+run(c("CMD", "build", shQuote(pkg)))
+Sys.setenv("_R_CHECK_CRAN_INCOMING_REMOTE_" = "false")
+run(c("CMD", "check", "--no-manual", "--no-multiarch", paste0("renviron_", version, ".tar.gz")))
+log <- readLines("renviron.Rcheck/00check.log", warn = FALSE)
+if (any(grepl("WARNING|ERROR|NOTE", log))) stop("Resolve R CMD check warnings/errors/notes before release")

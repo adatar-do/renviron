@@ -2,48 +2,24 @@
 % Please edit documentation in R/renviron_get.R
 \name{renviron_get}
 \alias{renviron_get}
-\title{Retrieve a specific environment variable from the environment file}
+\title{Consultar el valor de una variable}
 \usage{
 renviron_get(key, .renviron = NULL, ...)
 }
 \arguments{
-\item{key}{A character string specifying the name of the environment variable to retrieve.}
+\item{key}{Nombre de una variable.}
 
-\item{.renviron}{An optional named list of environment variables to use instead of loading from
-the .Renviron file. This can be useful for testing or when working with a modified set
-of environment variables that has not been saved back to the file.}
+\item{.renviron}{Lista o vector nombrado; \code{NULL} lee el archivo.}
 
-\item{...}{Additional arguments that are passed to the \code{renviron_load()} function:
-- \code{scope}: A character vector specifying the scope(s) to search for the .Renviron file.
-Valid values are "user" and "project", with "project" typically having precedence unless
-otherwise specified. This is used only when \code{.renviron} is \code{NULL}. The default is \code{c("user", "project")}.
-- \code{.file}: Specifies the filename to be considered as the environment file within the specified scope.
-Default is ".Renviron".}
+\item{...}{Argumentos de \code{\link[=renviron_read]{renviron_read()}}.}
 }
 \value{
-The value of the environment variable corresponding to \code{key}, if it exists.
-Returns \code{NULL} if the key does not exist in the list or .Renviron file within the specified scope.
+Valor de caracteres, incluyendo \code{""}; \code{NULL} si la clave no existe.
 }
 \description{
-This function fetches the value of a specified environment variable from the .Renviron file,
-considering both user and project scopes as defined by the \code{scope} argument when loading the file.
-If the \code{.renviron} argument is provided, it uses this list directly, bypassing the need to load
-from the file. This is particularly useful for accessing specific environment variables in a secure
-and controlled manner, especially during testing or when working with a dynamically modified environment.
+Consulta exclusivamente el archivo o la lista indicada, sin cargar variables
+ni recuperar valores ajenos del entorno de la sesión.
 }
 \examples{
-\dontrun{
-# Assuming the .Renviron file contains:
-# CENSUS_API_KEY='12345'
-
-# Retrieve the CENSUS_API_KEY value from the .Renviron file within the default scope
-api_key <- renviron_get("CENSUS_API_KEY")
-print(api_key)
-
-# Retrieve a variable value from a provided list of environment variables
-env_vars <- list(CENSUS_API_KEY='67890', GITHUB_PAT='fghij')
-api_key_from_list <- renviron_get("CENSUS_API_KEY", .renviron = env_vars)
-print(api_key_from_list)
-}
-
+renviron_get("RNV_EXAMPLE", .renviron = list(RNV_EXAMPLE = ""))
 }

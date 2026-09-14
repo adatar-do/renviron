@@ -1,0 +1,46 @@
+---
+title: "Read, load and edit"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Read, load and edit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`renviron 0.6.0` manages `.Renviron` files and custom filenames. Reading returns a list without changing the session; loading applies only selected keys. The examples use invented data and temporary files.
+
+| Function | Reads the file | Changes the session | Writes the file |
+|---|---|---|---|
+| `renviron_read()` | Yes | No | No |
+| `renviron_get()`, `renviron_exists()`, `renviron_list()` | Unless a list is supplied | No | No |
+| `renviron_load()` | Yes | Selected keys | No |
+| `renviron_add()`, `renviron_delete()` | Unless a list is supplied | Only the selected key | With `in_place=TRUE` |
+| `renviron_save()` | Does not parse previous contents | No | Full replacement |
+| `renviron_unset_all()` | Yes | Unsets selected keys | No |
+
+`renviron_list()` returns a fixed mask for each variable. `renviron_read()` and `renviron_get()` return actual values: avoid printing them when they contain private information. Masking is a display aid; it does not encrypt files.
+
+## Complete workflow
+
+Editing one key preserves comments and expressions for other keys. A dependent value is recalculated on the next read; its session value changes only when explicitly loaded.
+
+```{r}
+local({
+  withr::local_envvar(c(RNV_DEMO = "parent", RNV_COPY = "parent-copy"))
+  path <- tempfile()
+  on.exit(unlink(path))
+  writeLines(c("# invented configuration", "RNV_DEMO='one=two'",
+               "RNV_COPY='${RNV_DEMO}'"), path)
+  values <- renviron::renviron_read(.file = path)
+  stopifnot(values$RNV_COPY == "one=two", Sys.getenv("RNV_DEMO") == "parent")
+  renviron::renviron_add("RNV_DEMO", "updated", .file = path,
+                        in_place = TRUE, confirm = FALSE)
+  stopifnot(Sys.getenv("RNV_COPY") == "parent-copy")
+  renviron::renviron_load(.file = path, .vars = "RNV_COPY")
+  stopifnot(Sys.getenv("RNV_COPY") == "updated")
+  print(renviron::renviron_list(.file = path))
+  renviron::renviron_delete("RNV_DEMO", .file = path,
+                           in_place = TRUE, confirm = FALSE)
+  stopifnot(!renviron::renviron_exists("RNV_DEMO", .file = path))
+})
+```

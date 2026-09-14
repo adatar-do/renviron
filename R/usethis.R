@@ -1,42 +1,28 @@
-#' Determine Scoped Path for R Environments
+#' Construir una ruta dentro de un ámbito
 #'
-#' This function is a utility to find paths scoped to the user or the current project.
-#' It is based on the internal function `scoped_path_r` from the `usethis` package.
-#' It has been adapted for use here with proper attribution.
+#' Función de compatibilidad para resolver un único ámbito. Para buscar archivos
+#' en varios ámbitos use [renviron_path()]. No cambia el proyecto activo.
 #'
-#' @param scope A character string specifying the scope of the path.
-#'              Options are "user" for user-level configuration, or "project" for project-level.
-#' @param ... Additional arguments passed to `path`.
-#' @param envvar An optional environment variable that can specify a path.
-#'
-#' @return A string representing the path scoped as specified.
-#'
-#' @details This function is particularly useful for managing paths in user or project
-#'          specific configurations, such as .Renviron files.
-#'
+#' @param scope Un ámbito: `"user"` o `"project"`. El valor predeterminado usa user.
+#' @param ... Componentes de la ruta.
+#' @param envvar Nombre de una variable que puede reemplazar la ruta de usuario.
+#' @param project Directorio de proyecto; por defecto `getwd()`.
+#' @param user Directorio de usuario; por defecto el hogar de R.
+#' @return Ruta absoluta.
 #' @examples
-#' \dontrun{
-#' # Get the path to the user-level R configuration
-#' scoped_path_r("user")
-#'
-#' # Get the path to the current project's root directory
-#' scoped_path_r("project")
-#'}
-#'
-#' @references
-#' Function adapted from `usethis:::scoped_path_r` for demonstration purposes.
-#' usethis package: \url{https://usethis.r-lib.org/}
-#'
+#' scoped_path_r("project", "example.env", project = tempdir())
 #' @export
-scoped_path_r <- function (scope = c("user", "project"), ..., envvar = NULL) {
-  # Function body as you provided
+scoped_path_r <- function(scope = c("user", "project"), ..., envvar = NULL,
+                          project = getwd(), user = path.expand("~")) {
   scope <- match.arg(scope)
-  if (scope == "user" && !is.null(envvar)) {
-    env <- Sys.getenv(envvar, unset = "")
-    if (!identical(env, "")) {
-      return(path.expand(env))
-    }
+  if (!is.null(envvar)) {
+    rv_keys(envvar, scalar = TRUE)
+    override <- Sys.getenv(envvar, unset = "")
+    if (scope == "user" && nzchar(override)) return(as.character(fs::path_abs(path.expand(override))))
   }
-  root <- switch(scope, user = fs::path_home_r(), project = usethis::proj_get())
-  fs::path(root, ...)
+  root <- if (scope == "user") user else project
+  rv_scalar(root, "root")
+  components <- list(...)
+  for (part in components) rv_scalar(part, "Path component")
+  as.character(fs::path_abs(do.call(file.path, c(list(root), components))))
 }

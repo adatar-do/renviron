@@ -1,0 +1,31 @@
+---
+title: "Installation and publishing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Installation and publishing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The delivery contains `renviron_0.6.0.tar.gz`, the Windows binary `renviron_0.6.0.zip`, source files, the generated bilingual site, validation reports and a SHA-256 manifest. The binary is verified on Windows with R 4.5.1. Use the source package and run the relevant checks on other platforms; a CI matrix is configured, but local validation does not prove remote results.
+
+## Install
+
+From the extracted folder run `Rscript install.R path/to/library` on Windows, or append `source` as the second argument to install from source. The installer verifies the archive and mandatory dependencies before creating the library. It uses the local package only. External dependencies are listed in `external-dependencies.txt` and must already be available. Add the library to `.libPaths()` before `library(renviron)` and restart R when updating an already loaded version.
+
+You can also use `install.packages("packages/renviron_0.6.0.tar.gz", repos=NULL, type="source", lib="path/to/library")`. The local delivery does not imply that 0.6.0 is already available on CRAN, GitHub or r-universe.
+
+## Rebuild and publish documentation
+
+The repository contains the README, help for every function, four executable guides, changelog and complete translations. Spanish is served at the root and English under `en/`. Both editions have local search and reciprocal links on every page.
+
+From the ENDOM workspace run `Rscript renviron/scripts/check-release.R`, `Rscript renviron/scripts/build-docs.R`, and `python renviron/scripts/check-sites.py artifacts/renviron-release/sites/r --kind r`. Building uses roxygen2, pkgdown, knitr, rmarkdown, desc and jsonlite; the Python audit requires beautifulsoup4. `scripts/release.ps1` runs the full validation, documentation and installer sequence with the specified tools.
+
+To publish, serve the contents of `site/` as static files, retaining `en/`, `search.json`, JavaScript and styles. If the canonical URL changes, update DESCRIPTION, both `_pkgdown.yml` files, `scripts/build-docs.R` and the `canonical` constant in `scripts/check-sites.py` before rebuilding. The manual documentation workflow creates an artifact; it does not publish automatically.
+
+The delivery and its checksums make the result reviewable before deployment. It excludes local `.Renviron` and `.env` files and does not install globally or publish remotely.
+
+```{r}
+stopifnot(packageVersion("renviron") >= "0.6.0")
+renviron::renviron_list(list(RNV_INSTALL_CHECK = "invented"))
+```

@@ -8,3 +8,10 @@
 ^\.github$
 ^\.env$
 ^codecov\.yml$
+
+^\.Renviron($|\.)
+^\.env($|\.)
+^scripts$
+^pkgdown$
+^_pkgdown\.yml$
+^docs$

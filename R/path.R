@@ -1,48 +1,36 @@
-#' Retrieve the path to the .Renviron file
+#' Resolver el archivo de configuración
 #'
-#' This function determines the path to a specified environment file (by default, .Renviron) by
-#' considering both user and project scopes, utilizing an internal approach inspired by `usethis:::scoped_path_r`.
-#' It prioritizes the project-specific file if present; otherwise, it falls back to the user-level file.
-#' The function allows specifying the desired scope to directly target either the user-level or
-#' project-level file. Additionally, a specific filename can be specified, allowing for flexible file management.
+#' Consulta los ámbitos en el orden indicado, sin fusionar archivos ni cambiar
+#' el proyecto activo. `project` es el directorio de trabajo por defecto.
 #'
-#' @param scope A character string or vector specifying the scope to search for the environment file.
-#'        Valid values are "user" and "project". If both are provided, the function will search
-#'        in the order provided. The default order is c("user", "project").
-#'        The "user" scope refers to the user's home directory, while the "project" scope
-#'        refers to the current project directory.
-#' @param .file The name of the environment file to search for within the specified scope(s).
-#'        The default is '.Renviron'. This allows the function to be used to find other environment
-#'        files as needed.
-#' @param verbosity An integer specifying the level of verbosity. The default is 1, which prints
-#'       a message when the file is found. A value of 0 suppresses all messages.
-#' @param ... Additional parameters passed to the internal path finding function.
-#'
-#' @return A character string representing the path to the specified environment file within the
-#'         chosen scope. If the file exists in the 'project' scope and "project" is included in the
-#'         scope parameter, that path will be returned; otherwise, it will return the path to the
-#'         user-level file. If no file is found, the function will return NULL.
-#'
+#' @inheritParams renviron_read
+#' @param project Directorio para el ámbito de proyecto; por defecto `getwd()`.
+#' @param user Directorio para el ámbito de usuario; por defecto el hogar de R.
+#' @return Ruta absoluta. Si no existe un archivo, devuelve la primera ruta
+#'   candidata, utilizable para crear un archivo con [renviron_save()].
+#' @details Una ruta absoluta en `.file` tiene prioridad sobre los ámbitos.
+#'   `R_ENVIRON_USER` se respeta solo para el archivo predeterminado del ámbito
+#'   `user` cuando no se especifica `user`. Un nombre personalizado no se redirige.
+#'   El orden predeterminado sigue siendo usuario, proyecto; use
+#'   `scope = c("project", "user")` para dar prioridad al proyecto.
 #' @examples
-#' \dontrun{
-#' # To get the path to the user-level .Renviron file:
-#' user_env_path <- renviron_path("user")
-#' print(user_env_path)
-#'
-#' # To get the path to the project-level .Renviron file, if it exists:
-#' project_env_path <- renviron_path("project")
-#' print(project_env_path)
-#'
-#' # To search for a different file first in the user scope, then in the project scope:
-#' custom_file_path <- renviron_path(c("user", "project"), .file = ".myenv")
-#' print(custom_file_path)
-#' }
-#'
+#' renviron_path("project", project = tempdir())
 #' @export
-renviron_path <- function(scope = c("user", "project"), .file = '.Renviron', verbosity = 1, ...) {
-  if (verbosity == 0) {
-    suppressMessages(scoped_path_r(scope, .file, envvar = "R_ENVIRON_USER"))
-  } else {
-    scoped_path_r(scope, .file, envvar = "R_ENVIRON_USER")
-  }
+renviron_path <- function(scope = c("user", "project"), .file = ".Renviron",
+                          verbosity = 1, ..., project = getwd(), user = path.expand("~")) {
+  if (length(list(...))) stop("Unknown path arguments.", call. = FALSE)
+  rv_scalar(.file, ".file")
+  if (!is.numeric(verbosity) || length(verbosity) != 1L || is.na(verbosity) ||
+      !verbosity %in% c(0, 1)) stop("verbosity must be 0 or 1.", call. = FALSE)
+  if (!is.character(scope) || !length(scope) || anyNA(scope) ||
+      any(!scope %in% c("user", "project")) || anyDuplicated(scope))
+    stop("scope must contain unique user/project scopes in search order.", call. = FALSE)
+  if (fs::is_absolute_path(path.expand(.file))) return(as.character(fs::path_abs(path.expand(.file))))
+  rv_scalar(project, "project"); rv_scalar(user, "user")
+  user_path <- file.path(user, .file)
+  override <- Sys.getenv("R_ENVIRON_USER", unset = "")
+  if (missing(user) && identical(.file, ".Renviron") && nzchar(override)) user_path <- path.expand(override)
+  paths <- c(user = user_path, project = file.path(project, .file))[scope]
+  found <- which(file.exists(paths))
+  as.character(fs::path_abs(if (length(found)) paths[[found[[1L]]]] else paths[[1L]]))
 }

@@ -2,41 +2,34 @@
 % Please edit documentation in R/usethis.R
 \name{scoped_path_r}
 \alias{scoped_path_r}
-\title{Determine Scoped Path for R Environments}
+\title{Construir una ruta dentro de un ámbito}
 \usage{
-scoped_path_r(scope = c("user", "project"), ..., envvar = NULL)
+scoped_path_r(
+  scope = c("user", "project"),
+  ...,
+  envvar = NULL,
+  project = getwd(),
+  user = path.expand("~")
+)
 }
 \arguments{
-\item{scope}{A character string specifying the scope of the path.
-Options are "user" for user-level configuration, or "project" for project-level.}
+\item{scope}{Un ámbito: \code{"user"} o \code{"project"}. El valor predeterminado usa user.}
 
-\item{...}{Additional arguments passed to \code{path}.}
+\item{...}{Componentes de la ruta.}
 
-\item{envvar}{An optional environment variable that can specify a path.}
+\item{envvar}{Nombre de una variable que puede reemplazar la ruta de usuario.}
+
+\item{project}{Directorio de proyecto; por defecto \code{getwd()}.}
+
+\item{user}{Directorio de usuario; por defecto el hogar de R.}
 }
 \value{
-A string representing the path scoped as specified.
+Ruta absoluta.
 }
 \description{
-This function is a utility to find paths scoped to the user or the current project.
-It is based on the internal function \code{scoped_path_r} from the \code{usethis} package.
-It has been adapted for use here with proper attribution.
-}
-\details{
-This function is particularly useful for managing paths in user or project
-specific configurations, such as .Renviron files.
+Función de compatibilidad para resolver un único ámbito. Para buscar archivos
+en varios ámbitos use \code{\link[=renviron_path]{renviron_path()}}. No cambia el proyecto activo.
 }
 \examples{
-\dontrun{
-# Get the path to the user-level R configuration
-scoped_path_r("user")
-
-# Get the path to the current project's root directory
-scoped_path_r("project")
-}
-
-}
-\references{
-Function adapted from \code{usethis:::scoped_path_r} for demonstration purposes.
-usethis package: \url{https://usethis.r-lib.org/}
+scoped_path_r("project", "example.env", project = tempdir())
 }

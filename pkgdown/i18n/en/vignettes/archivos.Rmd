@@ -1,0 +1,46 @@
+---
+title: "Scopes and file syntax"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Scopes and file syntax}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Path selection
+
+`renviron_path()` searches `scope` in the supplied order and returns the first existing file. It does not merge files. If none exists, it returns the first candidate so it can be created. The default is `c("user", "project")`; use `c("project", "user")` to prefer the project.
+
+`project=getwd()` uses the current working directory without detecting roots or activating a usethis project. Both `project` and `user` can be provided explicitly. An absolute `.file` always selects that file. For the default `.Renviron` name in user scope, `R_ENVIRON_USER` takes precedence unless `user` is supplied. Custom filenames are never redirected by that variable. `scoped_path_r()` remains available to construct a path in a single scope.
+
+## Native interpretation
+
+Reading uses `readRenviron()` in a separate R process started with `--vanilla`. It does not execute startup profiles or alter the parent environment. The worker inherits the current environment for reference expansion and processes assignments in order. References may use keys outside `.vars`: filtering applies to the result.
+
+Supported input includes values containing `=`, single and double quotes, backslashes, UTF-8 Unicode, full-line comments and references `${VAR}`, `${VAR-default}` and `${VAR:-default}`. The optional `export KEY=value` prefix is an extension; native R does not require it. A bare `KEY=` is ignored, whereas `KEY=''` declares an empty string. A trailing `#` belongs to the value. Repeated keys follow R's last effective assignment.
+
+On Windows an empty string may be represented as an unset process variable. The returned list retains its key and `""`. An unquoted expansion producing an empty value may be ignored by R and retain an inherited value; use quotes to express intent. Returned values are not textual copies of the expressions in the file.
+
+See [R startup documentation](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Startup.html) for native reader rules. The package does not execute shell commands or interpret scripts.
+
+## Writing and limits
+
+Values supplied to `renviron_save()` and `renviron_add()` are **literal**: `${VARIABLE}` is encoded to recover that exact text. Single-key edits preserve other expressions without resolving or converting them to literals. Supplying a list to an editor with `in_place=TRUE` replaces the whole document with the modified list.
+
+Names must match `[A-Za-z_][A-Za-z0-9_]*`; values must be scalar character strings without NA or line breaks. NUL bytes, invalid UTF-8 and encoded lines longer than 99900 bytes are rejected. Missing or empty files return `list()`; invalid assignments stop the operation with a line number and no value in the diagnostic.
+
+Writing prepares a temporary file in the destination directory, checks for changes since reading, then replaces the destination while retaining existing file permissions. It does not provide locking between concurrent writers: coordinate one writer per file. Symbolic-link destinations are rejected. The directory must exist; new files use mode 0600 where supported, and inherited Windows ACLs still apply. Edits normalize line endings to LF and UTF-8.
+
+Every read starts an R process. To query many keys, read once and reuse the list. Reading requires an executable R installation and has a 60-second timeout.
+
+```{r}
+local({
+  path <- tempfile()
+  on.exit(unlink(path))
+  values <- list(RNV_EQUALS = "a=b==", RNV_LITERAL = "${RNV_EXAMPLE}",
+                 RNV_PATH = "C:\\folder\\", RNV_EMPTY = "")
+  renviron::renviron_save(values, .file = path, confirm = FALSE)
+  stopifnot(identical(renviron::renviron_read(.file = path), values))
+  print(renviron::renviron_list(values))
+})
+```

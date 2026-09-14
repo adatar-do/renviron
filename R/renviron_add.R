@@ -1,54 +1,58 @@
-#' Add or update an environment variable in the environment file
+#' Agregar o actualizar una variable
 #'
-#' This function adds a new environment variable or updates the value of an existing variable
-#' within the specified environment file (.Renviron by default), considering both user and project scopes.
-#' It offers the flexibility to either save the changes back to the environment file
-#' or to manipulate the variables in a more controlled manner by not saving (`in_place = FALSE`).
-#' Changes are immediately updated in the current R session's environment, regardless of the `in_place` setting.
+#' Actualiza la clave seleccionada en la sesión. Si se guarda, primero escribe
+#' el archivo; una cancelación o fallo de escritura deja la sesión intacta.
 #'
-#' @param key A character string specifying the name of the environment variable to add or update.
-#' @param value The new value for the environment variable, provided as a character string.
-#' @param .renviron An optional named list of environment variables to modify instead of loading
-#'        the environment file using `renviron_load()`. This can be useful for testing or batch processing.
-#' @param in_place A logical flag indicating whether to save the changes back to the environment
-#'        file (`TRUE`) or to return the modified list without saving (`FALSE`). Default is `FALSE`.
-#'        When `FALSE`, the function allows for controlled manipulation of variables without
-#'        permanently affecting the environment file.
-#' @param ... Additional arguments:
-#'        - `scope`: Specifies the scope(s) to search for the environment file when loading variables.
-#'          Valid values are "user" and "project", searched in the provided order. Default is `c("user", "project")`.
-#'        - `.file`: Specifies the filename to be considered as the environment file within the scope. Default is ".Renviron".
-#'        - `confirm`: Indicates whether to confirm changes before saving the environment file. Default is `TRUE`.
-#'
-#' @return If `in_place` is `TRUE`, the function invisibly returns the modified list of environment variables
-#'         after saving it to the environment file. If `in_place` is `FALSE`, it returns the modified list without saving,
-#'         allowing further manipulation or inspection. The current R session's environment reflects the updated values.
-#'
+#' @param key Nombre de una variable.
+#' @param value Un valor de caracteres, sin NA ni saltos de línea.
+#' @param .renviron Lista o vector nombrado; `NULL` usa el archivo.
+#' @param in_place Guardar también el archivo; el valor predeterminado es `FALSE`.
+#' @param ... Argumentos de [renviron_path()].
+#' @param confirm Confirmación interactiva del guardado; para scripts use `FALSE`.
+#' @return Lista modificada, invisiblemente; la lista original si se cancela.
+#' @details Sin `.renviron`, el guardado modifica solo las líneas de la clave;
+#'   conserva comentarios, líneas vacías y expresiones de las demás variables.
+#'   Elimina duplicados de la clave editada. Los finales de línea se normalizan
+#'   a LF y se escribe UTF-8. Si proporciona `.renviron`, el guardado reemplaza
+#'   todo el archivo con esa lista modificada. No recalcula otras variables
+#'   de la sesión que dependan de la clave; use [renviron_load()] para ello.
 #' @examples
-#' \dontrun{
-#' # Add or update the CENSUS_API_KEY variable in the environment file and save it
-#' renviron_add("CENSUS_API_KEY", "new_key_value", in_place = TRUE)
-#'
-#' # Add or update the variable in a provided list without saving
-#' env_list <- renviron_load()  # Load current environment variables
-#' modified_env <- renviron_add("NEW_VAR", "some_value", .renviron = env_list, in_place = FALSE)
-#' print(modified_env$NEW_VAR)  # Output the value of NEW_VAR
-#' }
-#'
+#' previous <- Sys.getenv("RNV_ADD_DEMO", unset = NA_character_)
+#' values <- renviron_add("RNV_ADD_DEMO", "sample", .renviron = list())
+#' if (is.na(previous)) Sys.unsetenv("RNV_ADD_DEMO") else
+#'   Sys.setenv(RNV_ADD_DEMO = previous)
 #' @export
-renviron_add <- function(key, value, .renviron = NULL, in_place = FALSE, ...) {
-  if (is.null(.renviron)) {
-    env <- renviron_load(...) # Load environment variables if not provided
-  } else {
-    env <- .renviron # Use the provided list of environment variables
+renviron_add <- function(key, value, .renviron = NULL, in_place = FALSE, ...,
+                         confirm = TRUE) {
+  rv_keys(key, scalar = TRUE); rv_scalar(value, "value", empty = TRUE)
+  rv_flag(in_place, "in_place"); rv_flag(confirm, "confirm")
+  rv_edit(key, value, .renviron, in_place, confirm, ...)
+}
+
+rv_edit <- function(key, value, supplied, in_place, confirm, ...) {
+  from_file <- is.null(supplied)
+  path <- NULL; document <- NULL
+  if (from_file || in_place) {
+    path <- renviron_path(...)
+    document <- rv_document(path)
   }
-
-  env[[key]] <- value # Add or update the specified key-value pair
-  do.call(Sys.setenv, env[key]) # Update the system environment
-
+  original <- if (from_file) rv_parse(document) else rv_values(supplied)
+  values <- original[rv_key_id(names(original)) != rv_key_id(key)]
+  if (!is.null(value)) values[[key]] <- value
   if (in_place) {
-    renviron_save(env, ...) # Save changes back to the .Renviron file
+    if (from_file) {
+      matches <- which(!is.na(document$keys) & rv_key_id(document$keys) == rv_key_id(key))
+      replacement <- if (is.null(value)) character() else rv_lines(stats::setNames(list(value), key))
+      lines <- document$lines
+      if (length(matches)) {
+        if (length(replacement)) lines[[matches[[1L]]]] <- replacement
+        remove <- if (length(replacement)) matches[-1L] else matches
+        if (length(remove)) lines <- lines[-remove]
+      } else lines <- c(lines, replacement)
+    } else lines <- rv_lines(values)
+    if (!rv_confirm(confirm)) return(invisible(original))
+    rv_write(path, lines, document$bytes)
   }
-
-  invisible(env) # Return modified environment without saving
+  if (is.null(value)) Sys.unsetenv(key) else rv_set(stats::setNames(list(value), key))
+  invisible(values)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/renviron_load.R
 \name{renviron_load}
 \alias{renviron_load}
-\title{Load Environment Variables from the .Renviron File}
+\title{Cargar variables en la sesión actual}
 \usage{
 renviron_load(
   scope = c("user", "project"),
@@ -13,42 +13,31 @@ renviron_load(
 )
 }
 \arguments{
-\item{scope}{A character vector specifying the scope(s) to search for the .Renviron file.
-Valid values are "user" and "project". The function searches in the order provided.
-The default order is \code{c("user", "project")}. The "user" scope refers to the user's home
-directory, while the "project" scope refers to the current project directory.}
+\item{scope}{Ámbitos que se consultan en orden: \code{"user"} y \code{"project"}.
+Se usa el primer archivo existente; si ninguno existe, la primera ruta.}
 
-\item{.file}{Optional filename to search within the specified scope.}
+\item{.file}{Nombre relativo al ámbito o ruta absoluta explícita.}
 
-\item{.vars}{Optional character vector specifying which variables to load; if NULL, all variables are loaded.}
+\item{.vars}{Nombres que se devuelven; \code{NULL} selecciona todos. Las referencias
+se resuelven con el archivo completo antes de filtrar.}
 
-\item{verbosity}{An integer specifying the level of verbosity in messages. Default is 1.}
+\item{verbosity}{\code{0} suprime el aviso de archivo ausente; \code{1} lo muestra.}
 
-\item{...}{Additional arguments passed to other internal functions.}
+\item{...}{Argumentos de \code{\link[=renviron_path]{renviron_path()}}, como \code{project} y \code{user}.}
 }
 \value{
-A named list of environment variables set in the system environment, invisibly returned.
+Lista de variables cargadas, devuelta invisiblemente.
 }
 \description{
-This function reads the .Renviron file, considering both user and project scopes as defined by the \code{scope} argument.
-It loads the variables defined within the file into a named list and sets them in the system environment. Only lines
-that follow the pattern key='value' or key="value" (where quotes are optional and can be single or double) are processed.
-Variables should be in the \code{KEY=VALUE} format, with optional outer quotes around the value. Lines that do not match
-this format are ignored.
+Lee y valida el archivo completo antes de modificar la sesión. Solo establece
+las variables seleccionadas; las demás conservan su valor actual.
 }
 \examples{
-\dontrun{
-# Load and set environment variables from the .Renviron file
-env_vars <- renviron_load()
-
-# Load and set specific environment variables from the .Renviron file
-env_vars <- renviron_load(.vars = c("CENSUS_API_KEY", "GITHUB_PAT"))
-
-# Load and set environment variables from a custom file
-env_vars <- renviron_load(.file = ".env")
-
-# Load and set environment variables from the user scope only
-env_vars <- renviron_load(scope = "user")
-}
-
+path <- tempfile()
+writeLines("RNV_LOAD_DEMO='sample'", path)
+previous <- Sys.getenv("RNV_LOAD_DEMO", unset = NA_character_)
+values <- renviron_load(.file = path, .vars = "RNV_LOAD_DEMO")
+if (is.na(previous)) Sys.unsetenv("RNV_LOAD_DEMO") else
+  Sys.setenv(RNV_LOAD_DEMO = previous)
+unlink(path)
 }
