@@ -107,9 +107,13 @@ test_that("scope ordering and explicit paths select one deterministic file", {
   expect_identical(custom, as.character(fs::path_abs(file.path(user, "custom.env"))))
   expect_false(identical(renviron_path("user", .file = "custom.env"), as.character(fs::path_abs(project_file))))
   withr::local_dir(project)
-  # getwd() resolves macOS /var symlinks; compare the same physical directory.
-  expect_identical(renviron_path("project"), normalizePath(project_file, winslash = "/"))
-  expect_identical(scoped_path_r("project", "custom.env"), file.path(normalizePath(project, winslash = "/"), "custom.env"))
+  # Compare physical directories across macOS symlinks and Windows short paths.
+  expect_identical(normalizePath(renviron_path("project"), winslash = "/"),
+                   normalizePath(project_file, winslash = "/"))
+  custom_path <- scoped_path_r("project", "custom.env")
+  expect_identical(normalizePath(dirname(custom_path), winslash = "/"),
+                   normalizePath(project, winslash = "/"))
+  expect_identical(basename(custom_path), "custom.env")
   expect_identical(scoped_path_r("user", "ignored", envvar = "R_ENVIRON_USER"), as.character(fs::path_abs(project_file)))
 })
 
